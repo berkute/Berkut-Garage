@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berkut Garage | Генератор Номеров</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Roboto+Condensed:wght@700&display=swap');
+
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #f5f5f5;
+            --text-secondary: #a0a0a0;
+            --accent: #d4af37; /* Золотой */
+            --accent-hover: #b8962e;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --plate-font: 'Roboto Condensed', 'Arial Narrow', sans-serif;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+            background-image: radial-gradient(circle at 50% 0%, #2a2a2a 0%, #121212 70%);
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 420px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(212, 175, 55, 0.2);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Декоративная полоска сверху */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .brand-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .brand-header p {
+            margin: 4px 0 0 0;
+            font-size: 11px;
+            color: var(--text-secondary);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .balance-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .balance {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        /* Номерной знак */
+        .plate-container {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            perspective: 1000px;
+        }
+
+        .license-plate {
+            display: inline-flex;
+            background: #fff;
+            border: 4px solid #000;
+            border-radius: 6px;
+            font-family: var(--plate-font);
+            font-weight: bold;
+            font-size: 44px;
+            line-height: 1;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .license-plate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.6);
+        }
+
+        .license-plate.rare {
+            border-color: #333;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .license-plate.legendary {
+            border-color: #000;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.8), 0 0 60px rgba(212, 175, 55, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .plate-main {
+            padding: 8px 12px;
+            letter-spacing: 3px;
+            background: #fff;
+            color: #000;
+        }
+
+        .plate-region {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding: 4px 8px;
+            background: #fff;
+            border-left: 2px solid #000;
+            font-size: 22px;
+            color: #000;
+        }
+
+        .plate-region .region-code {
+            font-size: 30px;
+            line-height: 1;
+        }
+
+        .plate-region .region-text {
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-top: 2px;
+        }
+
+        .flag {
+            width: 16px;
+            height: 10px;
+            background: linear-gradient(to bottom, #fff 33%, #0039a6 33%, #0039a6 66%, #d52b1e 66%);
+            border: 1px solid #ccc;
+            display: inline-block;
+        }
+
+        /* Информация о номере */
+        .info-panel {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .info-panel .status {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .status.common { color: var(--text-secondary); }
+        .status.uncommon { color: #3498db; }
+        .status.rare { color: var(--accent); }
+        .status.legendary { color: var(--danger); text-transform: uppercase; text-shadow: 0 0 10px rgba(231,76,60,0.5); }
+
+        .price-tag {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--success);
+            margin-top: 5px;
+        }
+
+        /* Кнопки */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .btn-generate {
+            background-color: var(--accent);
+            color: #121212;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-generate:hover:not(:disabled) {
+            background-color: var(--accent-hover);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-sell {
+            background-color: transparent;
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+
+        .btn-sell:hover:not(:disabled) {
+            background-color: var(--success);
+            color: #121212;
+        }
+
+        .btn-sell:disabled {
+            border-color: #555;
+            color: #555;
+        }
+
+        .cost-info {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: -5px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--accent);
+            color: #121212;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="brand-header">
+        <h1>Berkut</h1>
+        <p>Garage</p>
+    </div>
+
+    <div class="header">
+        <div class="balance-label">Баланс</div>
+        <div class="balance"><span id="balance">100 000</span> ₽</div>
+    </div>
+
+    <div class="plate-container">
+        <div class="license-plate" id="plate">
+            <div class="plate-main" id="plate-main">A000AA</div>
+            <div class="plate-region">
+                <div class="region-code" id="region-code">77</div>
+                <div class="region-text">RUS <span class="flag"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="status common" id="status-text">Ожидание генерации</div>
+        <div class="price-tag" id="price-text">Стоимость: 0 ₽</div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-generate" id="btn-generate">Сгенерировать (3 000 ₽)</button>
+        <button class="btn-sell" id="btn-sell" disabled>Продать номер</button>
+    </div>
+    <div class="cost-info">
+        * Редкие номера стоят дороже
+    </div>
+</div>
+
+<div class="toast" id="toast">Текст уведомления</div>
+
+<script>
+    // Конфигурация игры
+    const CONFIG = {
+        startBalance: 100000,
+        baseCost: 3000,
+        letters: 'ABEKMHOPCTYX',
+        regions: ['77', '99', '97', '177', '199', '197', '01', '02', '23', '50', '66', '799']
+    };
+
+    // Состояние игры
+    let state = {
+        balance: CONFIG.startBalance,
+        currentPlate: null,
+        isGenerating: false
+    };
+
+    // Элементы DOM
+    const balanceEl = document.getElementById('balance');
+    const plateMainEl = document.getElementById('plate-main');
+    const regionCodeEl = document.getElementById('region-code');
+    const statusTextEl = document.getElementById('status-text');
+    const priceTextEl = document.getElementById('price-text');
+    const btnGenerate = document.getElementById('btn-generate');
+    const btnSell = document.getElementById('btn-sell');
+    const plateEl = document.getElementById('plate');
+    const toastEl = document.getElementById('toast');
+
+    // Загрузка сохранения
+    function loadGame() {
+        const saved = localStorage.getItem('berkutGarageSave');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                state.balance = parsed.balance;
+                state.currentPlate = parsed.currentPlate;
+            } catch (e) {
+                console.error("Ошибка загрузки сохранения", e);
+            }
+        }
+        updateUI();
+    }
+
+    // Сохранение игры
+    function saveGame() {
+        localStorage.setItem('berkutGarageSave', JSON.stringify({
+            balance: state.balance,
+            currentPlate: state.currentPlate
+        }));
+    }
+
+    // Форматирование денег
+    function formatMoney(amount) {
+        return amount.toLocaleString('ru-RU');
+    }
+
+    // Генерация случайного числа в диапазоне
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Генерация номера
+    function generatePlate() {
+        const letter = () => CONFIG.letters[getRandomInt(0, CONFIG.letters.length - 1)];
+        const digit = () => getRandomInt(0, 9);
+        const region = CONFIG.regions[getRandomInt(0, CONFIG.regions.length - 1)];
+
+        const plateStr = `${letter()}${digit()}${digit()}${digit()}${letter()}${letter()}`;
+        
+        let rarity = 'common';
+        let multiplier = 1;
+        let statusText = 'Обычный';
+
+        const digits = plateStr.substring(1, 4);
+        const lettersPart = plateStr[0] + plateStr[4] + plateStr[5];
+
+        if (digits === '001' || digits === '777' || digits === '999') {
+            rarity = 'legendary';
+            multiplier = 10;
+            statusText = 'ЛЕГЕНДАРНЫЙ';
+        } else if (digits === '002' || digits === '003' || digits === '123' || digits === '111' || digits === '888') {
+            rarity = 'rare';
+            multiplier = 5;
+            statusText = 'Редкий';
+        } else if (lettersPart[0] === lettersPart[1] && lettersPart[1] === lettersPart[2]) {
+            rarity = 'rare';
+            multiplier = 4;
+            statusText = 'Редкий (3 одинаковые буквы)';
+        } else if (lettersPart[0] === lettersPart[1] || lettersPart[1] === lettersPart[2]) {
+            rarity = 'uncommon';
+            multiplier = 2;
+            statusText = 'Необычный';
+        } else if (digits === '000') {
+            rarity = 'common';
+            multiplier = 1;
+            statusText = 'Обычный';
+        }
+
+        const basePrice = 5000;
+        const sellPrice = Math.round((basePrice * multiplier) * (0.8 + Math.random() * 0.4));
+
+        return {
+            number: plateStr,
+            region: region,
+            rarity: rarity,
+            statusText: statusText,
+            sellPrice: sellPrice,
+            multiplier: multiplier
+        };
+    }
+
+    // Обновление интерфейса
+    function updateUI() {
+        balanceEl.textContent = formatMoney(state.balance);
+
+        if (state.currentPlate) {
+            plateMainEl.textContent = state.currentPlate.number;
+            regionCodeEl.textContent = state.currentPlate.region;
+            
+            statusTextEl.textContent = state.currentPlate.statusText;
+            statusTextEl.className = `status ${state.currentPlate.rarity}`;
+            
+            priceTextEl.textContent = `Стоимость: ${formatMoney(state.currentPlate.sellPrice)} ₽`;
+            
+            plateEl.className = `license-plate ${state.currentPlate.rarity}`;
+            
+            btnSell.disabled = false;
+        } else {
+            plateMainEl.textContent = 'A000AA';
+            regionCodeEl.textContent = '77';
+            statusTextEl.textContent = 'Ожидание генерации';
+            statusTextEl.className = 'status common';
+            priceTextEl.textContent = 'Стоимость: 0 ₽';
+            plateEl.className = 'license-plate';
+            btnSell.disabled = true;
+        }
+
+        if (state.balance < CONFIG.baseCost) {
+            btnGenerate.disabled = true;
+            btnGenerate.textContent = 'Недостаточно средств';
+        } else {
+            btnGenerate.disabled = false;
+            btnGenerate.textContent = `Сгенерировать (${formatMoney(CONFIG.baseCost)} ₽)`;
+        }
+    }
+
+    // Показать уведомление
+    function showToast(message) {
+        toastEl.textContent = message;
+        toastEl.classList.add('show');
+        setTimeout(() => {
+            toastEl.classList.remove('show');
+        }, 2500);
+    }
+
+    // Обработчик генерации
+    btnGenerate.addEventListener('click', () => {
+        if (state.balance < CONFIG.baseCost) return;
+
+        state.balance -= CONFIG.baseCost;
+        
+        const newPlate = generatePlate();
+        state.currentPlate = newPlate;
+
+        updateUI();
+        saveGame();
+        
+        showToast(`Berkut Garage: ${newPlate.number}`);
+    });
+
+    // Обработчик продажи
+    btnSell.addEventListener('click', () => {
+        if (!state.currentPlate) return;
+
+        const price = state.currentPlate.sellPrice;
+        state.balance += price;
+        
+        showToast(`Продано за ${formatMoney(price)} ₽`);
+        
+        state.currentPlate = null;
+        updateUI();
+        saveGame();
+    });
+
+    // Инициализация
+    loadGame();
+</script>
+
+</body>
+</html>
