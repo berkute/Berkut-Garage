@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Berkut Garage | Генератор Номеров</title>
+    <title>Berkut Garage | Симулятор Номеров</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Roboto+Condensed:wght@700&display=swap');
 
@@ -16,7 +16,13 @@
             --accent-hover: #b8962e;
             --success: #2ecc71;
             --danger: #e74c3c;
+            --primary: #3498db;
             --plate-font: 'Roboto Condensed', 'Arial Narrow', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -29,25 +35,23 @@
             min-height: 100vh;
             margin: 0;
             padding: 10px;
-            box-sizing: border-box;
             background-image: radial-gradient(circle at 50% 0%, #2a2a2a 0%, #121212 70%);
         }
 
         .container {
             background: var(--card-bg);
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(212, 175, 55, 0.2);
-            padding: 24px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 15px;
             position: relative;
             overflow: hidden;
         }
 
-        /* Декоративная полоска сверху */
         .container::before {
             content: '';
             position: absolute;
@@ -65,7 +69,7 @@
 
         .brand-header h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 900;
             letter-spacing: 3px;
             color: var(--accent);
@@ -75,7 +79,7 @@
 
         .brand-header p {
             margin: 4px 0 0 0;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-secondary);
             letter-spacing: 4px;
             text-transform: uppercase;
@@ -105,12 +109,68 @@
             color: var(--accent);
         }
 
+        /* Табы (Генератор / Гараж) */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: #121212;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Выбор страны и региона */
+        .selectors {
+            display: flex;
+            gap: 10px;
+        }
+
+        .selectors select {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            text-align: center;
+        }
+
+        .selectors select option {
+            background: var(--card-bg);
+            color: var(--text-main);
+        }
+
         /* Номерной знак */
         .plate-container {
             display: flex;
             justify-content: center;
-            margin: 10px 0;
+            margin: 5px 0;
             perspective: 1000px;
+            min-height: 80px;
+            align-items: center;
         }
 
         .license-plate {
@@ -120,12 +180,13 @@
             border-radius: 6px;
             font-family: var(--plate-font);
             font-weight: bold;
-            font-size: 44px;
+            font-size: 38px;
             line-height: 1;
             position: relative;
             overflow: hidden;
             box-shadow: 0 8px 16px rgba(0,0,0,0.4);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            user-select: none;
         }
 
         .license-plate:hover {
@@ -133,16 +194,9 @@
             box-shadow: 0 12px 24px rgba(0,0,0,0.6);
         }
 
-        .license-plate.rare {
-            border-color: #333;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-        }
-
-        .license-plate.legendary {
-            border-color: #000;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.8), 0 0 60px rgba(212, 175, 55, 0.4);
-            animation: pulse 2s infinite;
-        }
+        .license-plate.rare { box-shadow: 0 0 20px rgba(52, 152, 219, 0.5); }
+        .license-plate.elite { box-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
+        .license-plate.legendary { box-shadow: 0 0 30px rgba(231, 76, 60, 0.8), 0 0 60px rgba(231, 76, 60, 0.4); animation: pulse 2s infinite; }
 
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -151,8 +205,8 @@
         }
 
         .plate-main {
-            padding: 8px 12px;
-            letter-spacing: 3px;
+            padding: 6px 10px;
+            letter-spacing: 2px;
             background: #fff;
             color: #000;
         }
@@ -162,20 +216,20 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: flex-end;
-            padding: 4px 8px;
+            padding: 4px 6px;
             background: #fff;
             border-left: 2px solid #000;
-            font-size: 22px;
+            font-size: 18px;
             color: #000;
         }
 
         .plate-region .region-code {
-            font-size: 30px;
+            font-size: 24px;
             line-height: 1;
         }
 
         .plate-region .region-text {
-            font-size: 10px;
+            font-size: 8px;
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -183,54 +237,47 @@
             margin-top: 2px;
         }
 
-        .flag {
-            width: 16px;
-            height: 10px;
-            background: linear-gradient(to bottom, #fff 33%, #0039a6 33%, #0039a6 66%, #d52b1e 66%);
-            border: 1px solid #ccc;
-            display: inline-block;
-        }
+        .flag { width: 14px; height: 9px; background: linear-gradient(to bottom, #fff 33%, #0039a6 33%, #0039a6 66%, #d52b1e 66%); border: 1px solid #ccc; display: inline-block; }
 
         /* Информация о номере */
         .info-panel {
             background: rgba(255,255,255,0.03);
             border-radius: 10px;
-            padding: 14px;
+            padding: 12px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
         .info-panel .status {
             font-weight: 700;
-            font-size: 15px;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
+            font-size: 14px;
+            margin-bottom: 4px;
         }
 
         .status.common { color: var(--text-secondary); }
-        .status.uncommon { color: #3498db; }
-        .status.rare { color: var(--accent); }
-        .status.legendary { color: var(--danger); text-transform: uppercase; text-shadow: 0 0 10px rgba(231,76,60,0.5); }
+        .status.rare { color: var(--primary); }
+        .status.elite { color: var(--accent); }
+        .status.legendary { color: var(--danger); text-transform: uppercase; }
 
         .price-tag {
             font-size: 18px;
             font-weight: 800;
             color: var(--success);
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         /* Кнопки */
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         button {
-            padding: 16px;
+            padding: 14px;
             border: none;
-            border-radius: 10px;
-            font-size: 15px;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
@@ -239,15 +286,8 @@
             letter-spacing: 1px;
         }
 
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            filter: grayscale(1);
-        }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
 
         .btn-generate {
             background-color: var(--accent);
@@ -255,33 +295,62 @@
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
-        .btn-generate:hover:not(:disabled) {
-            background-color: var(--accent-hover);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        .btn-generate:hover:not(:disabled) { background-color: var(--accent-hover); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
+
+        .btn-action-group { display: flex; gap: 8px; }
+        .btn-action-group button { flex: 1; }
+
+        .btn-sell { background-color: transparent; color: var(--success); border: 2px solid var(--success); }
+        .btn-sell:hover:not(:disabled) { background-color: var(--success); color: #121212; }
+
+        .btn-keep { background-color: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-keep:hover:not(:disabled) { background-color: var(--primary); color: #fff; }
+
+        .cost-info { text-align: center; font-size: 11px; color: var(--text-secondary); margin-top: -5px; }
+
+        /* Гараж */
+        .garage-list {
+            max-height: 350px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 5px;
         }
 
-        .btn-sell {
-            background-color: transparent;
+        .garage-list::-webkit-scrollbar { width: 6px; }
+        .garage-list::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+        .garage-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+
+        .garage-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 10px;
+            transition: background 0.2s;
+        }
+
+        .garage-item:hover { background: rgba(255,255,255,0.06); }
+
+        .garage-item-info { display: flex; flex-direction: column; gap: 2px; }
+        .garage-item-plate { font-family: var(--plate-font); font-size: 20px; font-weight: bold; color: #fff; letter-spacing: 1px; }
+        .garage-item-region { font-size: 12px; color: var(--text-secondary); }
+        .garage-item-price { font-size: 14px; font-weight: bold; color: var(--success); }
+
+        .garage-item .btn-sell-small {
+            padding: 8px 12px;
+            font-size: 12px;
+            background: rgba(46, 204, 113, 0.1);
             color: var(--success);
-            border: 2px solid var(--success);
+            border: 1px solid var(--success);
+            border-radius: 6px;
         }
+        .garage-item .btn-sell-small:hover { background: var(--success); color: #121212; }
 
-        .btn-sell:hover:not(:disabled) {
-            background-color: var(--success);
-            color: #121212;
-        }
-
-        .btn-sell:disabled {
-            border-color: #555;
-            color: #555;
-        }
-
-        .cost-info {
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: -5px;
-        }
+        .empty-garage { text-align: center; color: var(--text-secondary); font-size: 14px; padding: 20px 0; }
 
         .toast {
             position: fixed;
@@ -290,9 +359,9 @@
             transform: translateX(-50%) translateY(-100px);
             background: var(--accent);
             color: #121212;
-            padding: 14px 28px;
+            padding: 12px 24px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             opacity: 0;
@@ -301,18 +370,15 @@
             text-align: center;
         }
 
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="brand-header">
-        <h1>Berkut</h1>
-        <p>Garage</p>
+        <h1>Berkut Garage</h1>
+        <p>Симулятор Номеров</p>
     </div>
 
     <div class="header">
@@ -320,49 +386,103 @@
         <div class="balance"><span id="balance">100 000</span> ₽</div>
     </div>
 
-    <div class="plate-container">
-        <div class="license-plate" id="plate">
-            <div class="plate-main" id="plate-main">A000AA</div>
-            <div class="plate-region">
-                <div class="region-code" id="region-code">77</div>
-                <div class="region-text">RUS <span class="flag"></span></div>
+    <!-- Табы -->
+    <div class="tabs">
+        <div class="tab active" id="tab-generator" onclick="switchTab('generator')">Генератор</div>
+        <div class="tab" id="tab-garage" onclick="switchTab('garage')">Гараж (<span id="garage-count">0</span>)</div>
+    </div>
+
+    <!-- Вкладка: Генератор -->
+    <div id="view-generator" style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="selectors">
+            <select id="country-select" onchange="updateRegions()">
+                <option value="RU">🇷🇺 Россия</option>
+                <!-- Задел на будущее -->
+                <!-- <option value="BY">🇧🇾 Беларусь</option> -->
+                <!-- <option value="KZ">🇰🇿 Казахстан</option> -->
+            </select>
+            <select id="region-select">
+                <!-- Заполняется через JS -->
+            </select>
+        </div>
+
+        <div class="plate-container">
+            <div class="license-plate" id="plate">
+                <div class="plate-main" id="plate-main">A000AA</div>
+                <div class="plate-region">
+                    <div class="region-code" id="region-code">77</div>
+                    <div class="region-text">RUS <span class="flag"></span></div>
+                </div>
             </div>
         </div>
+
+        <div class="info-panel">
+            <div class="status common" id="status-text">Ожидание генерации</div>
+            <div class="price-tag" id="price-text">Стоимость: 0 ₽</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-generate" id="btn-generate">Сгенерировать (200 ₽)</button>
+            <div class="btn-action-group">
+                <button class="btn-sell" id="btn-sell" disabled>Продать</button>
+                <button class="btn-keep" id="btn-keep" disabled>В Гараж</button>
+            </div>
+        </div>
+        <div class="cost-info">* Крутые номера на престижных регионах стоят миллионы</div>
     </div>
 
-    <div class="info-panel">
-        <div class="status common" id="status-text">Ожидание генерации</div>
-        <div class="price-tag" id="price-text">Стоимость: 0 ₽</div>
-    </div>
-
-    <div class="controls">
-        <button class="btn-generate" id="btn-generate">Сгенерировать (3 000 ₽)</button>
-        <button class="btn-sell" id="btn-sell" disabled>Продать номер</button>
-    </div>
-    <div class="cost-info">
-        * Редкие номера стоят дороже
+    <!-- Вкладка: Гараж -->
+    <div id="view-garage" style="display: none; flex-direction: column; gap: 10px;">
+        <div class="garage-list" id="garage-list">
+            <!-- Заполняется через JS -->
+        </div>
+        <button class="btn-sell" id="btn-sell-all" style="margin-top: 5px;">Продать всё</button>
     </div>
 </div>
 
 <div class="toast" id="toast">Текст уведомления</div>
 
 <script>
-    // Конфигурация игры
+    // ================= КОНФИГУРАЦИЯ =================
     const CONFIG = {
         startBalance: 100000,
-        baseCost: 3000,
+        baseCost: 200, // Цена генерации (пачка чипсов)
         letters: 'ABEKMHOPCTYX',
-        regions: ['77', '99', '97', '177', '199', '197', '01', '02', '23', '50', '66', '799']
+        eliteLetters: ['AMP', 'EKX', 'AMR', 'KMR', 'OMP', 'MMM', 'XXX', 'KKX'],
+        // База данных регионов
+        regions: {
+            'RU': {
+                '77': { name: 'Москва', multiplier: 5 },
+                '99': { name: 'Москва', multiplier: 8 },
+                '97': { name: 'Москва', multiplier: 12 },
+                '177': { name: 'Москва', multiplier: 4 },
+                '199': { name: 'Москва', multiplier: 6 },
+                '197': { name: 'Москва', multiplier: 7 },
+                '78': { name: 'СПб', multiplier: 4 },
+                '98': { name: 'СПб', multiplier: 5 },
+                '178': { name: 'СПб', multiplier: 3 },
+                '198': { name: 'СПб', multiplier: 4 },
+                '23': { name: 'Краснодар', multiplier: 3 },
+                '93': { name: 'Краснодар', multiplier: 4 },
+                '123': { name: 'Краснодар', multiplier: 5 },
+                '01': { name: 'Адыгея', multiplier: 1 },
+                '02': { name: 'Башкортостан', multiplier: 1.5 },
+                '66': { name: 'Свердловская', multiplier: 2 },
+                '799': { name: 'Москва', multiplier: 6 }
+            }
+        }
     };
 
-    // Состояние игры
+    // ================= СОСТОЯНИЕ ИГРЫ =================
     let state = {
         balance: CONFIG.startBalance,
         currentPlate: null,
-        isGenerating: false
+        garage: [],
+        selectedCountry: 'RU',
+        selectedRegion: '77'
     };
 
-    // Элементы DOM
+    // ================= DOM ЭЛЕМЕНТЫ =================
     const balanceEl = document.getElementById('balance');
     const plateMainEl = document.getElementById('plate-main');
     const regionCodeEl = document.getElementById('region-code');
@@ -370,85 +490,152 @@
     const priceTextEl = document.getElementById('price-text');
     const btnGenerate = document.getElementById('btn-generate');
     const btnSell = document.getElementById('btn-sell');
+    const btnKeep = document.getElementById('btn-keep');
     const plateEl = document.getElementById('plate');
     const toastEl = document.getElementById('toast');
+    
+    const countrySelect = document.getElementById('country-select');
+    const regionSelect = document.getElementById('region-select');
+    const garageListEl = document.getElementById('garage-list');
+    const garageCountEl = document.getElementById('garage-count');
+    const btnSellAll = document.getElementById('btn-sell-all');
 
-    // Загрузка сохранения
+    // ================= ЛОГИКА СОХРАНЕНИЯ =================
+    function saveGame() {
+        localStorage.setItem('berkutGarageSave_v2', JSON.stringify(state));
+    }
+
     function loadGame() {
-        const saved = localStorage.getItem('berkutGarageSave');
+        const saved = localStorage.getItem('berkutGarageSave_v2');
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                state.balance = parsed.balance;
-                state.currentPlate = parsed.currentPlate;
+                state = { ...state, ...parsed };
             } catch (e) {
-                console.error("Ошибка загрузки сохранения", e);
+                console.error("Ошибка загрузки", e);
             }
         }
+        updateRegions(); // Заполняем выпадающий список регионов
         updateUI();
     }
 
-    // Сохранение игры
-    function saveGame() {
-        localStorage.setItem('berkutGarageSave', JSON.stringify({
-            balance: state.balance,
-            currentPlate: state.currentPlate
-        }));
+    // ================= УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ =================
+    function switchTab(tab) {
+        document.getElementById('tab-generator').classList.toggle('active', tab === 'generator');
+        document.getElementById('tab-garage').classList.toggle('active', tab === 'garage');
+        
+        document.getElementById('view-generator').style.display = tab === 'generator' ? 'flex' : 'none';
+        document.getElementById('view-garage').style.display = tab === 'garage' ? 'flex' : 'none';
+        
+        if (tab === 'garage') renderGarage();
     }
 
-    // Форматирование денег
-    function formatMoney(amount) {
-        return amount.toLocaleString('ru-RU');
+    function updateRegions() {
+        const country = countrySelect.value;
+        state.selectedCountry = country;
+        const regions = CONFIG.regions[country];
+        
+        regionSelect.innerHTML = '';
+        for (const [code, data] of Object.entries(regions)) {
+            const option = document.createElement('option');
+            option.value = code;
+            option.textContent = `${data.name} (${code})`;
+            regionSelect.appendChild(option);
+        }
+        
+        // Восстанавливаем выбранный регион, если он есть в списке
+        if (regions[state.selectedRegion]) {
+            regionSelect.value = state.selectedRegion;
+        } else {
+            state.selectedRegion = Object.keys(regions)[0];
+            regionSelect.value = state.selectedRegion;
+        }
+        
+        saveGame();
+        updateUI();
     }
 
-    // Генерация случайного числа в диапазоне
+    regionSelect.addEventListener('change', (e) => {
+        state.selectedRegion = e.target.value;
+        saveGame();
+        updateUI();
+    });
+
+    // ================= ГЕНЕРАЦИЯ И ЦЕНООБРАЗОВАНИЕ =================
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    // Генерация номера
-    function generatePlate() {
+    function formatMoney(amount) {
+        return amount.toLocaleString('ru-RU');
+    }
+
+    function calculatePlate() {
         const letter = () => CONFIG.letters[getRandomInt(0, CONFIG.letters.length - 1)];
         const digit = () => getRandomInt(0, 9);
-        const region = CONFIG.regions[getRandomInt(0, CONFIG.regions.length - 1)];
-
-        const plateStr = `${letter()}${digit()}${digit()}${digit()}${letter()}${letter()}`;
         
+        const plateStr = `${letter()}${digit()}${digit()}${digit()}${letter()}${letter()}`;
+        const regionCode = state.selectedRegion;
+        
+        // Разбор номера
+        const lettersPart = plateStr[0] + plateStr[4] + plateStr[5]; // Например, AMP
+        const numbersPart = plateStr.substring(1, 4); // Например, 001
+
+        // Определение редкости
         let rarity = 'common';
-        let multiplier = 1;
         let statusText = 'Обычный';
+        let multiplier = 1;
 
-        const digits = plateStr.substring(1, 4);
-        const lettersPart = plateStr[0] + plateStr[4] + plateStr[5];
-
-        if (digits === '001' || digits === '777' || digits === '999') {
+        // 1. Множитель букв
+        if (CONFIG.eliteLetters.includes(lettersPart)) {
             rarity = 'legendary';
-            multiplier = 10;
-            statusText = 'ЛЕГЕНДАРНЫЙ';
-        } else if (digits === '002' || digits === '003' || digits === '123' || digits === '111' || digits === '888') {
-            rarity = 'rare';
-            multiplier = 5;
-            statusText = 'Редкий';
+            statusText = 'ЭЛИТНЫЙ (Блат)';
+            multiplier *= 100; // АМР, ЕКХ и т.д. очень дорогие
         } else if (lettersPart[0] === lettersPart[1] && lettersPart[1] === lettersPart[2]) {
-            rarity = 'rare';
-            multiplier = 4;
-            statusText = 'Редкий (3 одинаковые буквы)';
+            rarity = 'elite';
+            statusText = 'Красивые буквы (ААА)';
+            multiplier *= 15;
         } else if (lettersPart[0] === lettersPart[1] || lettersPart[1] === lettersPart[2]) {
-            rarity = 'uncommon';
-            multiplier = 2;
-            statusText = 'Необычный';
-        } else if (digits === '000') {
-            rarity = 'common';
-            multiplier = 1;
-            statusText = 'Обычный';
+            rarity = 'rare';
+            statusText = 'Необычные буквы (2 одинаковые)';
+            multiplier *= 3;
         }
 
-        const basePrice = 5000;
-        const sellPrice = Math.round((basePrice * multiplier) * (0.8 + Math.random() * 0.4));
+        // 2. Множитель цифр
+        if (numbersPart === '001' || numbersPart === '777' || numbersPart === '999') {
+            if (rarity === 'legendary') { statusText = 'ЛЕГЕНДА (Блат + Цифры)'; multiplier *= 50; }
+            else { rarity = 'legendary'; statusText = 'ЛЕГЕНДАРНЫЙ (Цифры)'; multiplier *= 30; }
+        } else if (numbersPart === '002' || numbersPart === '003' || numbersPart === '123' || numbersPart === '111' || numbersPart === '888') {
+            if (rarity === 'common') { rarity = 'rare'; statusText = 'Красивые цифры'; }
+            multiplier *= 5;
+        } else if (numbersPart === '000') {
+            multiplier *= 0.5; // Штраф за 000 (считается плохим)
+            statusText = 'Обычный (000)';
+        }
+
+        // 3. Множитель региона
+        const regionData = CONFIG.regions[state.selectedCountry][regionCode];
+        const regionMultiplier = regionData ? regionData.multiplier : 1;
+        multiplier *= regionMultiplier;
+
+        // Итоговая цена
+        const basePrice = 500; // Базовая цена "среднего" номера
+        let sellPrice = Math.round(basePrice * multiplier * (0.8 + Math.random() * 0.4));
+        
+        // Минимальная цена (чтобы не продавать за копейки)
+        if (sellPrice < 50) sellPrice = 50;
+
+        // Переопределяем редкость для интерфейса, если номер оказался очень дорогим из-за региона
+        if (sellPrice > 100000 && rarity !== 'legendary') {
+            rarity = 'elite';
+            statusText = 'Дорогой регион';
+        }
 
         return {
+            id: Date.now() + Math.random().toString(36).substr(2, 5),
             number: plateStr,
-            region: region,
+            region: regionCode,
+            country: state.selectedCountry,
             rarity: rarity,
             statusText: statusText,
             sellPrice: sellPrice,
@@ -456,7 +643,7 @@
         };
     }
 
-    // Обновление интерфейса
+    // ================= ОБНОВЛЕНИЕ UI =================
     function updateUI() {
         balanceEl.textContent = formatMoney(state.balance);
 
@@ -472,16 +659,19 @@
             plateEl.className = `license-plate ${state.currentPlate.rarity}`;
             
             btnSell.disabled = false;
+            btnKeep.disabled = false;
         } else {
             plateMainEl.textContent = 'A000AA';
-            regionCodeEl.textContent = '77';
+            regionCodeEl.textContent = state.selectedRegion;
             statusTextEl.textContent = 'Ожидание генерации';
             statusTextEl.className = 'status common';
             priceTextEl.textContent = 'Стоимость: 0 ₽';
             plateEl.className = 'license-plate';
             btnSell.disabled = true;
+            btnKeep.disabled = true;
         }
 
+        // Блокировка кнопки генерации
         if (state.balance < CONFIG.baseCost) {
             btnGenerate.disabled = true;
             btnGenerate.textContent = 'Недостаточно средств';
@@ -489,33 +679,85 @@
             btnGenerate.disabled = false;
             btnGenerate.textContent = `Сгенерировать (${formatMoney(CONFIG.baseCost)} ₽)`;
         }
+        
+        garageCountEl.textContent = state.garage.length;
     }
 
-    // Показать уведомление
-    function showToast(message) {
-        toastEl.textContent = message;
-        toastEl.classList.add('show');
-        setTimeout(() => {
-            toastEl.classList.remove('show');
-        }, 2500);
+    // ================= ГАРАЖ =================
+    function renderGarage() {
+        garageListEl.innerHTML = '';
+        
+        if (state.garage.length === 0) {
+            garageListEl.innerHTML = '<div class="empty-garage">Гараж пуст.<br>Сгенерируйте и сохраните номера!</div>';
+            btnSellAll.disabled = true;
+            return;
+        }
+        
+        btnSellAll.disabled = false;
+        
+        // Сортируем по цене (от дорогих к дешевым)
+        const sortedGarage = [...state.garage].sort((a, b) => b.sellPrice - a.sellPrice);
+        
+        sortedGarage.forEach(plate => {
+            const item = document.createElement('div');
+            item.className = 'garage-item';
+            
+            item.innerHTML = `
+                <div class="garage-item-info">
+                    <div class="garage-item-plate">${plate.number} <span style="font-size: 12px; color: #aaa;">${plate.region}</span></div>
+                    <div class="garage-item-region">${plate.statusText}</div>
+                    <div class="garage-item-price">${formatMoney(plate.sellPrice)} ₽</div>
+                </div>
+                <button class="btn-sell-small" onclick="sellFromGarage('${plate.id}')">Продать</button>
+            `;
+            
+            garageListEl.appendChild(item);
+        });
     }
 
-    // Обработчик генерации
+    function sellFromGarage(id) {
+        const index = state.garage.findIndex(p => p.id === id);
+        if (index !== -1) {
+            const price = state.garage[index].sellPrice;
+            state.balance += price;
+            state.garage.splice(index, 1);
+            showToast(`Продано за ${formatMoney(price)} ₽`);
+            saveGame();
+            updateUI();
+            renderGarage();
+        }
+    }
+
+    function sellAll() {
+        if (state.garage.length === 0) return;
+        
+        let total = 0;
+        state.garage.forEach(p => total += p.sellPrice);
+        
+        state.balance += total;
+        state.garage = [];
+        
+        showToast(`Всё продано за ${formatMoney(total)} ₽`);
+        saveGame();
+        updateUI();
+        renderGarage();
+    }
+
+    // ================= ОБРАБОТЧИКИ СОБЫТИЙ =================
     btnGenerate.addEventListener('click', () => {
         if (state.balance < CONFIG.baseCost) return;
 
         state.balance -= CONFIG.baseCost;
         
-        const newPlate = generatePlate();
+        const newPlate = calculatePlate();
         state.currentPlate = newPlate;
 
         updateUI();
         saveGame();
         
-        showToast(`Berkut Garage: ${newPlate.number}`);
+        showToast(`Выпал номер: ${newPlate.number} ${newPlate.region}`);
     });
 
-    // Обработчик продажи
     btnSell.addEventListener('click', () => {
         if (!state.currentPlate) return;
 
@@ -529,7 +771,29 @@
         saveGame();
     });
 
-    // Инициализация
+    btnKeep.addEventListener('click', () => {
+        if (!state.currentPlate) return;
+        
+        state.garage.push(state.currentPlate);
+        showToast(`Номер ${state.currentPlate.number} добавлен в гараж`);
+        
+        state.currentPlate = null;
+        updateUI();
+        saveGame();
+    });
+
+    btnSellAll.addEventListener('click', sellAll);
+
+    // ================= УВЕДОМЛЕНИЯ =================
+    function showToast(message) {
+        toastEl.textContent = message;
+        toastEl.classList.add('show');
+        setTimeout(() => {
+            toastEl.classList.remove('show');
+        }, 2500);
+    }
+
+    // ================= ИНИЦИАЛИЗАЦИЯ =================
     loadGame();
 </script>
 
