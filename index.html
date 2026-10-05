@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Berkut Garage | Симулятор Номеров v2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Berkut Garage | Симулятор Номеров v3</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Roboto+Condensed:wght@700&display=swap');
 
@@ -14,93 +14,104 @@
   --success:#2ecc71; --danger:#e74c3c; --primary:#3498db;
   --purple:#9b59b6; --cyan:#00d4ff; --pink:#ff4fa3;
   --plate-font:'Roboto Condensed','Arial Narrow',sans-serif;
+  --radius:10px; --radius-lg:16px;
+  --scale:1;
 }
+[data-theme="light"]{--bg:#f0f0f2;--card:#fff;--card2:#f5f5f7;--text:#1a1a1d;--text2:#666;}
+[data-theme="blue"]{--bg:#0a1220;--card:#0f1a2e;--card2:#152441;--accent:#4da3ff;--text:#e8f0ff;--text2:#8ea5c7;}
+[data-theme="purple"]{--bg:#140a20;--card:#1c0f2e;--card2:#261541;--accent:#b56eff;--text:#f0e8ff;--text2:#a78fc7;}
+[data-theme="green"]{--bg:#0a1a0f;--card:#0f2417;--card2:#153322;--accent:#4ddb7a;--text:#e8ffef;--text2:#8fc7a3;}
+[data-theme="red"]{--bg:#200a0a;--card:#2e0f0f;--card2:#411515;--accent:#ff5555;--text:#ffe8e8;--text2:#c78f8f;}
+
+[data-perf="low"] .confetti,[data-perf="low"] .ray{display:none !important;}
+[data-perf="low"] *{animation-duration:0s !important;transition-duration:.05s !important;}
+
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{overflow-x:hidden;}
 body{
   font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
-  display:flex;justify-content:center;align-items:flex-start;min-height:100vh;margin:0;padding:10px;
-  background-image:radial-gradient(circle at 50% 0%,#2a2a30 0%,#0e0e10 70%);
+  display:flex;justify-content:center;align-items:flex-start;min-height:100vh;margin:0;
+  padding:calc(10px * var(--scale));
+  background-image:radial-gradient(circle at 50% 0%,var(--card2) 0%,var(--bg) 70%);
+  font-size:calc(13px * var(--scale));
+  transition:background .3s,color .3s;
 }
 .container{
-  background:var(--card);width:100%;max-width:460px;border-radius:16px;
+  background:var(--card);width:100%;max-width:480px;
+  border-radius:var(--radius-lg);
   box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 0 1px rgba(212,175,55,.15);
-  padding:16px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;
+  padding:calc(14px * var(--scale));display:flex;flex-direction:column;gap:calc(10px * var(--scale));
+  position:relative;overflow:hidden;
 }
 .container::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
   background:linear-gradient(90deg,transparent,var(--accent),transparent);}
-.brand-header{text-align:center;}
-.brand-header h1{margin:0;font-size:24px;font-weight:900;letter-spacing:3px;color:var(--accent);
+.brand-header{text-align:center;position:relative;}
+.brand-header h1{margin:0;font-size:calc(22px * var(--scale));font-weight:900;letter-spacing:3px;color:var(--accent);
   text-transform:uppercase;text-shadow:0 0 20px rgba(212,175,55,.3);}
-.brand-header p{margin:3px 0 0;font-size:9px;color:var(--text2);letter-spacing:4px;
+.brand-header p{margin:3px 0 0;font-size:calc(9px * var(--scale));color:var(--text2);letter-spacing:3px;
   text-transform:uppercase;font-weight:600;}
+.settings-btn{position:absolute;top:0;right:0;background:transparent;border:none;
+  font-size:calc(18px * var(--scale));cursor:pointer;padding:4px;color:var(--accent);}
 
-/* Top stats */
-.top-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.top-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:calc(6px * var(--scale));}
 .stat-chip{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
-  border-radius:8px;padding:6px 8px;text-align:center;}
-.stat-chip .lbl{font-size:8px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;font-weight:700;}
-.stat-chip .val{font-size:13px;font-weight:800;color:var(--accent);}
+  border-radius:var(--radius);padding:calc(6px * var(--scale)) calc(8px * var(--scale));text-align:center;}
+.stat-chip .lbl{font-size:calc(8px * var(--scale));color:var(--text2);letter-spacing:1px;text-transform:uppercase;font-weight:700;}
+.stat-chip .val{font-size:calc(13px * var(--scale));font-weight:800;color:var(--accent);}
 
 .balance-box{display:flex;justify-content:space-between;align-items:center;
   background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(212,175,55,.02));
-  padding:12px 16px;border-radius:10px;border:1px solid rgba(212,175,55,.25);}
-.balance-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;}
-.balance{font-size:22px;font-weight:900;color:var(--accent);}
+  padding:calc(12px * var(--scale)) calc(16px * var(--scale));border-radius:var(--radius);
+  border:1px solid rgba(212,175,55,.25);}
+.balance-label{font-size:calc(11px * var(--scale));color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;}
+.balance{font-size:calc(22px * var(--scale));font-weight:900;color:var(--accent);}
 
-/* XP bar */
-.xp-wrap{background:rgba(255,255,255,.03);border-radius:6px;padding:6px 10px;
-  border:1px solid rgba(255,255,255,.05);font-size:10px;}
+.xp-wrap{background:rgba(255,255,255,.03);border-radius:6px;padding:calc(6px * var(--scale)) calc(10px * var(--scale));
+  border:1px solid rgba(255,255,255,.05);font-size:calc(10px * var(--scale));}
 .xp-bar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;margin-top:4px;overflow:hidden;}
 .xp-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));width:0%;transition:width .4s;}
 
-/* Event banner */
 .event-banner{display:none;background:linear-gradient(135deg,rgba(155,89,182,.2),rgba(0,212,255,.1));
-  border:1px solid rgba(155,89,182,.4);border-radius:8px;padding:8px 12px;
-  font-size:11px;font-weight:700;text-align:center;color:#fff;animation:pulse 2s infinite;}
+  border:1px solid rgba(155,89,182,.4);border-radius:var(--radius);padding:calc(8px * var(--scale)) calc(12px * var(--scale));
+  font-size:calc(11px * var(--scale));font-weight:700;text-align:center;color:var(--text);animation:pulse 2s infinite;}
 .event-banner.show{display:block;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}
 
-/* Tabs */
-.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;}
-.tab{flex:1;min-width:70px;padding:8px 6px;background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);border-radius:8px;color:var(--text2);
-  font-weight:700;font-size:11px;cursor:pointer;transition:.25s;text-align:center;white-space:nowrap;}
+.tabs{display:flex;gap:calc(5px * var(--scale));overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:calc(64px * var(--scale));padding:calc(7px * var(--scale)) calc(5px * var(--scale));
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius);color:var(--text2);font-weight:700;
+  font-size:calc(10px * var(--scale));cursor:pointer;transition:.25s;text-align:center;white-space:nowrap;}
 .tab.active{background:var(--accent);color:#121212;border-color:var(--accent);
   box-shadow:0 0 15px rgba(212,175,55,.3);}
 
-/* Selectors */
-.selectors{display:flex;gap:8px;}
-.selectors select{flex:1;padding:9px;background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);
-  font-family:'Montserrat',sans-serif;font-size:13px;outline:none;cursor:pointer;
+.selectors{display:flex;gap:calc(8px * var(--scale));}
+.selectors select{flex:1;padding:calc(9px * var(--scale));background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);color:var(--text);
+  font-family:'Montserrat',sans-serif;font-size:calc(13px * var(--scale));outline:none;cursor:pointer;
   appearance:none;text-align:center;font-weight:700;}
 .selectors select option{background:var(--card);color:var(--text);}
 
-/* Plate */
-.plate-container{display:flex;justify-content:center;margin:4px 0;min-height:90px;align-items:center;perspective:900px;}
-.license-plate{
-  display:inline-flex;background:#fff;border:4px solid #000;border-radius:6px;
-  font-family:var(--plate-font);font-weight:bold;font-size:34px;line-height:1;position:relative;
-  overflow:hidden;box-shadow:0 8px 16px rgba(0,0,0,.4);transition:transform .35s,box-shadow .35s;user-select:none;
-}
+.plate-container{display:flex;justify-content:center;margin:calc(4px * var(--scale)) 0;
+  min-height:calc(80px * var(--scale));align-items:center;perspective:900px;}
+.license-plate{display:inline-flex;background:#fff;border:4px solid #000;border-radius:6px;
+  font-family:var(--plate-font);font-weight:bold;font-size:calc(32px * var(--scale));line-height:1;
+  position:relative;overflow:hidden;box-shadow:0 8px 16px rgba(0,0,0,.4);
+  transition:transform .35s,box-shadow .35s;user-select:none;max-width:100%;}
 .license-plate:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(0,0,0,.6);}
-.plate-main{padding:6px 10px;letter-spacing:2px;background:#fff;color:#000;}
+.plate-main{padding:calc(6px * var(--scale)) calc(10px * var(--scale));letter-spacing:2px;background:#fff;color:#000;}
 .plate-region{display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;
-  padding:4px 6px;background:#fff;border-left:2px solid #000;font-size:16px;color:#000;min-width:44px;}
-.plate-region .region-code{font-size:22px;line-height:1;font-weight:900;}
-.plate-region .region-text{font-size:7px;font-weight:bold;margin-top:2px;letter-spacing:.5px;}
-.plate-region .flag-sm{width:16px;height:10px;margin-top:1px;border:1px solid #333;border-radius:1px;}
+  padding:calc(4px * var(--scale)) calc(6px * var(--scale));background:#fff;border-left:2px solid #000;
+  font-size:calc(16px * var(--scale));color:#000;min-width:calc(44px * var(--scale));}
+.plate-region .region-code{font-size:calc(20px * var(--scale));line-height:1;font-weight:900;}
+.plate-region .region-text{font-size:calc(7px * var(--scale));font-weight:bold;margin-top:2px;letter-spacing:.5px;}
+.plate-region .flag-sm{width:calc(16px * var(--scale));height:calc(10px * var(--scale));margin-top:1px;border:1px solid #333;border-radius:1px;}
 
-/* Country-specific designs */
-.lic-UA{border-color:#0039a6;}
-.lic-UA .plate-region{border-left-color:#0039a6;}
-.lic-KZ{border-color:#00afca;}
-.lic-KZ .plate-region{border-left-color:#00afca;}
-.lic-BY{border-color:#c8102e;}
-.lic-BY .plate-region{border-left-color:#c8102e;}
-.lic-RU{border-color:#000;}
+.lic-UA{border-color:#0039a6;} .lic-UA .plate-region{border-left-color:#0039a6;}
+.lic-KZ{border-color:#00afca;} .lic-KZ .plate-region{border-left-color:#00afca;}
+.lic-BY{border-color:#c8102e;} .lic-BY .plate-region{border-left-color:#c8102e;}
 
-/* Rarity glow */
 .lic-common{box-shadow:0 8px 16px rgba(0,0,0,.4);}
 .lic-uncommon{box-shadow:0 0 14px rgba(46,204,113,.5);}
 .lic-beautiful{box-shadow:0 0 16px rgba(52,152,219,.6);}
@@ -108,115 +119,94 @@ body{
 .lic-veryrare{box-shadow:0 0 24px rgba(0,212,255,.8);}
 .lic-epic{box-shadow:0 0 28px rgba(255,79,163,.85);}
 .lic-legendary{box-shadow:0 0 30px rgba(212,175,55,.9),0 0 60px rgba(212,175,55,.4);animation:glow 2s infinite;}
-.lic-unique{box-shadow:0 0 34px rgba(231,76,60,1),0 0 70px rgba(231,76,60,.6),0 0 100px rgba(255,255,255,.3);animation:glow 1.4s infinite;}
+.lic-unique{box-shadow:0 0 34px rgba(231,76,60,1),0 0 70px rgba(231,76,60,.6);animation:glow 1.4s infinite;}
 @keyframes glow{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
 
-/* Info panel */
-.info-panel{background:rgba(255,255,255,.03);border-radius:10px;padding:10px 12px;
-  text-align:center;border:1px solid rgba(255,255,255,.05);}
-.info-panel .status{font-weight:800;font-size:13px;margin-bottom:3px;letter-spacing:.5px;}
-.status.common{color:var(--text2);}
-.status.uncommon{color:var(--success);}
-.status.beautiful{color:var(--primary);}
-.status.rare{color:var(--purple);}
-.status.veryrare{color:var(--cyan);}
-.status.epic{color:var(--pink);}
+.info-panel{background:rgba(255,255,255,.03);border-radius:var(--radius);
+  padding:calc(10px * var(--scale)) calc(12px * var(--scale));text-align:center;
+  border:1px solid rgba(255,255,255,.05);}
+.info-panel .status{font-weight:800;font-size:calc(13px * var(--scale));margin-bottom:3px;letter-spacing:.5px;}
+.status.common{color:var(--text2);} .status.uncommon{color:var(--success);}
+.status.beautiful{color:var(--primary);} .status.rare{color:var(--purple);}
+.status.veryrare{color:var(--cyan);} .status.epic{color:var(--pink);}
 .status.legendary{color:var(--accent);text-shadow:0 0 8px rgba(212,175,55,.5);}
 .status.unique{color:var(--danger);text-transform:uppercase;text-shadow:0 0 10px rgba(231,76,60,.7);}
-.price-tag{font-size:17px;font-weight:900;color:var(--success);margin-top:3px;}
-.extra-tags{font-size:10px;color:var(--accent);margin-top:4px;letter-spacing:1px;}
+.price-tag{font-size:calc(17px * var(--scale));font-weight:900;color:var(--success);margin-top:3px;}
+.extra-tags{font-size:calc(10px * var(--scale));color:var(--accent);margin-top:4px;letter-spacing:1px;}
 
-/* Buttons */
-.controls{display:flex;flex-direction:column;gap:7px;}
-button{padding:12px;border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;
-  transition:.2s;font-family:'Montserrat',sans-serif;text-transform:uppercase;letter-spacing:1px;color:#fff;}
+.controls{display:flex;flex-direction:column;gap:calc(6px * var(--scale));}
+button{padding:calc(11px * var(--scale));border:none;border-radius:var(--radius);
+  font-size:calc(12px * var(--scale));font-weight:800;cursor:pointer;transition:.2s;
+  font-family:'Montserrat',sans-serif;text-transform:uppercase;letter-spacing:1px;color:#fff;}
 button:active{transform:scale(.98);}
 button:disabled{opacity:.35;cursor:not-allowed;filter:grayscale(.7);}
 
 .btn-generate{background:linear-gradient(135deg,var(--accent),#e0c04a);color:#121212;
   box-shadow:0 4px 15px rgba(212,175,55,.3);}
-.btn-generate:hover:not(:disabled){filter:brightness(1.1);box-shadow:0 6px 20px rgba(212,175,55,.5);}
-
-.btn-group{display:flex;gap:6px;}
+.btn-group{display:flex;gap:calc(6px * var(--scale));}
 .btn-group button{flex:1;}
-
 .btn-sell{background:transparent;color:var(--success);border:2px solid var(--success);}
-.btn-sell:hover:not(:disabled){background:var(--success);color:#121212;}
 .btn-keep{background:transparent;color:var(--primary);border:2px solid var(--primary);}
-.btn-keep:hover:not(:disabled){background:var(--primary);color:#fff;}
 .btn-premium{background:linear-gradient(135deg,var(--purple),#c0392b);}
 .btn-vip{background:linear-gradient(135deg,var(--pink),var(--accent));color:#121212;}
 .btn-daily{background:linear-gradient(135deg,var(--success),#27ae60);}
-.btn-event{background:linear-gradient(135deg,var(--primary),#2980b9);}
+.cost-info{text-align:center;font-size:calc(10px * var(--scale));color:var(--text2);}
 
-.cost-info{text-align:center;font-size:10px;color:var(--text2);margin-top:-2px;}
-
-/* Garage / list */
-.list-container{max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px;}
+.list-container{max-height:390px;overflow-y:auto;display:flex;flex-direction:column;gap:calc(8px * var(--scale));padding-right:4px;}
 .list-container::-webkit-scrollbar{width:5px;}
 .list-container::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px;}
 .list-container::-webkit-scrollbar-track{background:rgba(255,255,255,.05);}
 
 .item{display:flex;justify-content:space-between;align-items:center;
   background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
-  border-radius:10px;padding:10px;transition:.2s;gap:8px;position:relative;}
+  border-radius:var(--radius);padding:calc(10px * var(--scale));transition:.2s;gap:calc(8px * var(--scale));}
 .item:hover{background:rgba(255,255,255,.06);}
 .item.fav{border-color:var(--accent);box-shadow:0 0 10px rgba(212,175,55,.25);}
-.item.pl-common{border-left:3px solid #666;}
-.item.pl-uncommon{border-left:3px solid var(--success);}
-.item.pl-beautiful{border-left:3px solid var(--primary);}
-.item.pl-rare{border-left:3px solid var(--purple);}
-.item.pl-veryrare{border-left:3px solid var(--cyan);}
-.item.pl-epic{border-left:3px solid var(--pink);}
-.item.pl-legendary{border-left:3px solid var(--accent);}
-.item.pl-unique{border-left:3px solid var(--danger);}
+.item.pl-common{border-left:3px solid #666;} .item.pl-uncommon{border-left:3px solid var(--success);}
+.item.pl-beautiful{border-left:3px solid var(--primary);} .item.pl-rare{border-left:3px solid var(--purple);}
+.item.pl-veryrare{border-left:3px solid var(--cyan);} .item.pl-epic{border-left:3px solid var(--pink);}
+.item.pl-legendary{border-left:3px solid var(--accent);} .item.pl-unique{border-left:3px solid var(--danger);}
 
 .item-info{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
-.item-plate{font-family:var(--plate-font);font-size:19px;font-weight:bold;color:#fff;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.item-sub{font-size:11px;color:var(--text2);}
-.item-price{font-size:14px;font-weight:900;color:var(--success);}
-.item-rarity{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;}
+.item-plate{font-family:var(--plate-font);font-size:calc(18px * var(--scale));font-weight:bold;color:var(--text);letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-sub{font-size:calc(10px * var(--scale));color:var(--text2);}
+.item-price{font-size:calc(13px * var(--scale));font-weight:900;color:var(--success);}
+.item-rarity{font-size:calc(9px * var(--scale));font-weight:800;text-transform:uppercase;letter-spacing:1px;}
 .item-actions{display:flex;flex-direction:column;gap:4px;align-items:flex-end;}
-.item-btn{padding:6px 10px;font-size:10px;border-radius:6px;border:none;cursor:pointer;
-  font-weight:800;letter-spacing:.5px;}
+.item-btn{padding:calc(5px * var(--scale)) calc(9px * var(--scale));font-size:calc(10px * var(--scale));
+  border-radius:6px;border:none;cursor:pointer;font-weight:800;}
 .btn-sell-sm{background:rgba(46,204,113,.15);color:var(--success);border:1px solid var(--success);}
-.btn-sell-sm:hover{background:var(--success);color:#121212;}
 .btn-info-sm{background:rgba(52,152,219,.15);color:var(--primary);border:1px solid var(--primary);}
-.btn-fav-sm{background:rgba(212,175,55,.15);color:var(--accent);border:1px solid var(--accent);
-  padding:4px 6px;font-size:12px;}
+.btn-fav-sm{background:rgba(212,175,55,.15);color:var(--accent);border:1px solid var(--accent);padding:3px 5px;}
 
-.empty-state{text-align:center;color:var(--text2);font-size:12px;padding:24px 8px;}
+.empty-state{text-align:center;color:var(--text2);font-size:calc(12px * var(--scale));padding:calc(24px * var(--scale)) 8px;}
 
-/* Search & sort */
-.toolbar{display:flex;gap:6px;flex-wrap:wrap;}
-.toolbar input,.toolbar select{flex:1;min-width:90px;padding:8px;background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);
-  font-family:'Montserrat',sans-serif;font-size:12px;outline:none;font-weight:600;}
+.toolbar{display:flex;gap:calc(6px * var(--scale));flex-wrap:wrap;}
+.toolbar input,.toolbar select{flex:1;min-width:calc(90px * var(--scale));
+  padding:calc(8px * var(--scale));background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);color:var(--text);
+  font-family:'Montserrat',sans-serif;font-size:calc(12px * var(--scale));outline:none;font-weight:600;}
 
-/* Toast */
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);
-  background:var(--accent);color:#121212;padding:12px 22px;border-radius:8px;
-  font-size:13px;font-weight:800;box-shadow:0 4px 20px rgba(0,0,0,.5);
-  opacity:0;transition:transform .4s cubic-bezier(.175,.885,.32,1.275),opacity .4s;
-  z-index:1000;text-align:center;max-width:90%;}
+  background:var(--accent);color:#121212;padding:calc(12px * var(--scale)) calc(22px * var(--scale));
+  border-radius:var(--radius);font-size:calc(12px * var(--scale));font-weight:800;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);opacity:0;
+  transition:transform .4s cubic-bezier(.175,.885,.32,1.275),opacity .4s;
+  z-index:1000;text-align:center;max-width:92%;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
-/* Jackpot overlay */
 .jackpot{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:2000;display:none;
-  flex-direction:column;justify-content:center;align-items:center;gap:16px;padding:20px;text-align:center;}
-.jackpot.show{display:flex;animation:jackIn .5s;}
-@keyframes jackIn{from{opacity:0}to{opacity:1}}
-.jackpot-title{font-size:26px;font-weight:900;letter-spacing:3px;
+  flex-direction:column;justify-content:center;align-items:center;gap:calc(14px * var(--scale));padding:20px;text-align:center;}
+.jackpot.show{display:flex;}
+.jackpot-title{font-size:calc(24px * var(--scale));font-weight:900;letter-spacing:3px;
   background:linear-gradient(90deg,#fff,var(--accent),#fff);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:shine 2s infinite;}
-@keyframes shine{0%{background-position:-200% center}100%{background-position:200% center}}
-.jackpot-sub{font-size:12px;color:var(--text2);letter-spacing:4px;text-transform:uppercase;font-weight:700;}
-.jackpot-plate{transform:scale(1.15);margin:8px 0;}
-.jackpot-rarity{font-size:16px;font-weight:900;letter-spacing:2px;}
-.jackpot-price{font-size:24px;font-weight:900;color:var(--success);}
-.jackpot-btn{padding:14px 32px;background:linear-gradient(135deg,var(--accent),#e0c04a);
-  color:#121212;border-radius:10px;font-size:14px;font-weight:900;letter-spacing:2px;border:none;cursor:pointer;}
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.jackpot-sub{font-size:calc(11px * var(--scale));color:#a0a0a0;letter-spacing:4px;text-transform:uppercase;font-weight:700;}
+.jackpot-rarity{font-size:calc(15px * var(--scale));font-weight:900;letter-spacing:2px;}
+.jackpot-price{font-size:calc(22px * var(--scale));font-weight:900;color:var(--success);}
+.jackpot-btn{padding:calc(12px * var(--scale)) calc(28px * var(--scale));
+  background:linear-gradient(135deg,var(--accent),#e0c04a);color:#121212;
+  border-radius:var(--radius);font-size:calc(13px * var(--scale));font-weight:900;letter-spacing:2px;border:none;cursor:pointer;}
 .jackpot-rays{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1;}
 .ray{position:absolute;top:50%;left:50%;width:200%;height:2px;
   background:linear-gradient(90deg,transparent,rgba(212,175,55,.5),transparent);
@@ -226,103 +216,165 @@ button:disabled{opacity:.35;cursor:not-allowed;filter:grayscale(.7);}
   animation:fall 3s linear forwards;}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
 
-/* Gen overlay animation */
 .gen-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1500;display:none;
   flex-direction:column;justify-content:center;align-items:center;gap:14px;}
 .gen-overlay.show{display:flex;}
 .gen-spinner{width:70px;height:70px;border:4px solid rgba(212,175,55,.2);
   border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.gen-text{font-size:14px;font-weight:800;letter-spacing:3px;color:var(--accent);text-transform:uppercase;}
-.gen-stage{font-size:11px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;min-height:16px;}
+.gen-text{font-size:calc(14px * var(--scale));font-weight:800;letter-spacing:3px;color:var(--accent);text-transform:uppercase;}
+.gen-stage{font-size:calc(11px * var(--scale));color:#a0a0a0;letter-spacing:2px;text-transform:uppercase;min-height:16px;}
 
-/* Stats grid */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:calc(8px * var(--scale));}
 .stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
-  border-radius:10px;padding:10px;text-align:center;}
-.stat-card .sl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:1.2px;font-weight:700;}
-.stat-card .sv{font-size:15px;font-weight:900;color:var(--accent);margin-top:3px;word-break:break-word;}
+  border-radius:var(--radius);padding:calc(10px * var(--scale));text-align:center;}
+.stat-card .sl{font-size:calc(9px * var(--scale));color:var(--text2);text-transform:uppercase;letter-spacing:1.2px;font-weight:700;}
+.stat-card .sv{font-size:calc(14px * var(--scale));font-weight:900;color:var(--accent);margin-top:3px;word-break:break-word;}
 
-/* Achievements */
-.ach-item{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px;}
+.ach-item{display:flex;gap:calc(10px * var(--scale));align-items:center;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--radius);padding:calc(10px * var(--scale));}
 .ach-item.unlocked{background:linear-gradient(135deg,rgba(212,175,55,.08),transparent);border-color:rgba(212,175,55,.3);}
-.ach-icon{font-size:22px;filter:grayscale(1);opacity:.4;}
+.ach-icon{font-size:calc(22px * var(--scale));filter:grayscale(1);opacity:.4;}
 .ach-item.unlocked .ach-icon{filter:none;opacity:1;}
 .ach-info{flex:1;}
-.ach-name{font-size:12px;font-weight:800;}
-.ach-desc{font-size:10px;color:var(--text2);}
+.ach-name{font-size:calc(12px * var(--scale));font-weight:800;}
+.ach-desc{font-size:calc(10px * var(--scale));color:var(--text2);}
 
-/* Top plates */
-.top-item{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px;}
-.top-rank{font-size:20px;font-weight:900;min-width:36px;text-align:center;}
-.top-rank.r1{color:#ffd700;text-shadow:0 0 8px #ffd700;}
-.top-rank.r2{color:#c0c0c0;text-shadow:0 0 8px #c0c0c0;}
-.top-rank.r3{color:#cd7f32;text-shadow:0 0 8px #cd7f32;}
+.top-item{display:flex;gap:calc(10px * var(--scale));align-items:center;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--radius);padding:calc(10px * var(--scale));}
+.top-rank{font-size:calc(20px * var(--scale));font-weight:900;min-width:calc(36px * var(--scale));text-align:center;}
+.top-rank.r1{color:#ffd700;} .top-rank.r2{color:#c0c0c0;} .top-rank.r3{color:#cd7f32;}
 
-/* Volume slider */
-.vol-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);}
+.vol-row{display:flex;align-items:center;gap:8px;font-size:calc(11px * var(--scale));color:var(--text2);}
 .vol-row input[type=range]{flex:1;accent-color:var(--accent);}
 
-/* Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1800;display:none;
   justify-content:center;align-items:center;padding:20px;}
 .modal.show{display:flex;}
-.modal-box{background:var(--card);border-radius:14px;padding:20px;max-width:380px;width:100%;
+.modal-box{background:var(--card);border-radius:14px;padding:calc(18px * var(--scale));
+  max-width:calc(400px * var(--scale));width:100%;max-height:85vh;overflow-y:auto;
   border:1px solid rgba(212,175,55,.3);text-align:center;}
-.modal-box h3{margin:0 0 12px;font-size:16px;color:var(--accent);letter-spacing:1.5px;}
-.modal-box p{font-size:13px;color:var(--text2);margin:8px 0;line-height:1.4;}
+.modal-box h3{margin:0 0 12px;font-size:calc(16px * var(--scale));color:var(--accent);letter-spacing:1.5px;}
+.modal-box p{font-size:calc(13px * var(--scale));color:var(--text2);margin:8px 0;line-height:1.4;}
 .modal-actions{display:flex;gap:8px;margin-top:14px;}
 .modal-actions button{flex:1;}
 .btn-confirm{background:var(--success);color:#121212;}
 .btn-cancel{background:rgba(255,255,255,.08);color:var(--text);}
+
+.settings-row{display:flex;justify-content:space-between;align-items:center;
+  padding:calc(10px * var(--scale)) calc(12px * var(--scale));
+  background:rgba(255,255,255,.03);border-radius:var(--radius);margin-bottom:6px;
+  border:1px solid rgba(255,255,255,.05);gap:10px;}
+.settings-row label{font-size:calc(12px * var(--scale));font-weight:700;flex:1;color:var(--text);}
+.settings-row select,.settings-row input[type=text]{padding:6px 10px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);border-radius:8px;color:var(--text);
+  font-family:inherit;font-size:calc(11px * var(--scale));outline:none;font-weight:700;}
+.settings-row input[type=range]{flex:1;accent-color:var(--accent);}
+.settings-row .toggle{position:relative;width:44px;height:24px;background:rgba(255,255,255,.1);
+  border-radius:12px;cursor:pointer;transition:.25s;flex-shrink:0;}
+.settings-row .toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;
+  background:var(--text2);border-radius:50%;transition:.25s;}
+.settings-row .toggle.on{background:var(--accent);}
+.settings-row .toggle.on::after{background:#121212;transform:translateX(20px);}
+
+.settings-section{font-size:calc(11px * var(--scale));font-weight:900;color:var(--accent);
+  letter-spacing:2px;text-transform:uppercase;margin:8px 0 4px;padding-left:2px;}
+
+.news-item{padding:calc(10px * var(--scale));background:rgba(255,255,255,.03);
+  border-radius:var(--radius);border-left:3px solid var(--accent);margin-bottom:6px;}
+.news-title{font-size:calc(12px * var(--scale));font-weight:800;color:var(--accent);}
+.news-body{font-size:calc(11px * var(--scale));color:var(--text2);margin-top:3px;}
+
+.quest-item{padding:calc(10px * var(--scale));background:rgba(255,255,255,.03);
+  border-radius:var(--radius);margin-bottom:6px;border:1px solid rgba(255,255,255,.06);}
+.quest-item.done{border-color:var(--success);background:rgba(46,204,113,.08);}
+.quest-title{font-size:calc(12px * var(--scale));font-weight:800;}
+.quest-progress{font-size:calc(10px * var(--scale));color:var(--text2);margin-top:2px;}
+.quest-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:4px;overflow:hidden;}
+.quest-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--success));transition:width .3s;}
+
+.profile-header{text-align:center;padding:calc(14px * var(--scale));}
+.avatar-pick{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.avatar-pick span{font-size:24px;padding:6px;cursor:pointer;border-radius:50%;
+  background:rgba(255,255,255,.05);border:2px solid transparent;transition:.2s;}
+.avatar-pick span.sel{border-color:var(--accent);background:rgba(212,175,55,.15);}
+
+.onboarding{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;
+  display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;gap:16px;text-align:center;}
+.onboarding.show{display:flex;}
+.onboarding-step{font-size:calc(14px * var(--scale));color:var(--text);max-width:360px;line-height:1.6;}
+.onboarding-icon{font-size:calc(56px * var(--scale));}
+.onboarding-btns{display:flex;gap:10px;margin-top:20px;}
+
+.save-warning{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:4000;
+  background:var(--danger);color:#fff;padding:12px 20px;border-radius:10px;
+  font-size:12px;font-weight:800;display:none;max-width:90%;text-align:center;}
+.save-warning.show{display:block;}
+
+@media (min-width:768px){
+  .container{max-width:520px;}
+  .list-container{max-height:480px;}
+}
+@media (min-width:1200px){
+  .container{max-width:560px;}
+}
+@media (orientation:landscape) and (max-height:500px){
+  body{align-items:flex-start;padding:6px;}
+  .container{padding:10px;gap:8px;}
+  .plate-container{min-height:60px;}
+  .license-plate{font-size:26px;}
+  .plate-main{padding:4px 8px;}
+  .brand-header h1{font-size:18px;}
+  .brand-header p{display:none;}
+}
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="app">
   <div class="brand-header">
-    <h1>Berkut Garage</h1>
-    <p>Симулятор Номеров v2</p>
+    <h1 data-i18n="title">Berkut Garage</h1>
+    <p data-i18n="subtitle">Симулятор Номеров v3</p>
+    <button class="settings-btn" onclick="openSettings()" title="Settings">⚙️</button>
   </div>
 
   <div class="top-stats">
-    <div class="stat-chip"><div class="lbl">🍀 Удача</div><div class="val" id="luckVal">1.00x</div></div>
-    <div class="stat-chip"><div class="lbl">🎖 Уровень</div><div class="val" id="lvlVal">1</div></div>
-    <div class="stat-chip"><div class="lbl">🎫 Генераций</div><div class="val" id="genCountVal">0</div></div>
+    <div class="stat-chip"><div class="lbl">🍀 <span data-i18n="luck">Удача</span></div><div class="val" id="luckVal">1.00x</div></div>
+    <div class="stat-chip"><div class="lbl">🎖 <span data-i18n="level">Уровень</span></div><div class="val" id="lvlVal">1</div></div>
+    <div class="stat-chip"><div class="lbl">🎫 <span data-i18n="gens">Генераций</span></div><div class="val" id="genCountVal">0</div></div>
   </div>
 
   <div class="balance-box">
-    <div class="balance-label">Баланс</div>
+    <div class="balance-label" data-i18n="balance">Баланс</div>
     <div class="balance"><span id="balance">100 000</span> ₽</div>
   </div>
 
   <div class="xp-wrap">
     <div style="display:flex;justify-content:space-between;">
       <span id="xpLabel">XP: 0 / 100</span>
-      <span id="titleLabel">Новичок</span>
+      <span id="titleLabel">—</span>
     </div>
     <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
   </div>
 
   <div class="event-banner" id="eventBanner"></div>
 
-  <div class="tabs">
-    <div class="tab active" data-tab="generator">Генератор</div>
-    <div class="tab" data-tab="garage">Гараж <span id="garageCount">0</span></div>
-    <div class="tab" data-tab="market">Рынок</div>
-    <div class="tab" data-tab="top">🏆 ТОП</div>
-    <div class="tab" data-tab="stats">📊 Статистика</div>
+  <div class="tabs" id="mainTabs">
+    <div class="tab active" data-tab="generator" data-i18n="tab_gen">Генератор</div>
+    <div class="tab" data-tab="garage"><span data-i18n="tab_garage">Гараж</span> <span id="garageCount">0</span></div>
+    <div class="tab" data-tab="market" data-i18n="tab_market">Рынок</div>
+    <div class="tab" data-tab="top" data-i18n="tab_top">🏆 ТОП</div>
+    <div class="tab" data-tab="more" data-i18n="tab_more">⋯ Ещё</div>
   </div>
 
-  <!-- GENERATOR VIEW -->
+  <!-- GENERATOR -->
   <div id="view-generator" style="display:flex;flex-direction:column;gap:10px;">
     <div class="selectors">
       <select id="countrySelect"></select>
       <select id="regionSelect"></select>
     </div>
-
     <div class="plate-container">
       <div class="license-plate lic-RU" id="plate">
         <div class="plate-main" id="plateMain">A000AA</div>
@@ -333,13 +385,11 @@ button:disabled{opacity:.35;cursor:not-allowed;filter:grayscale(.7);}
         </div>
       </div>
     </div>
-
     <div class="info-panel">
-      <div class="status common" id="statusText">Выберите страну и регион</div>
+      <div class="status common" id="statusText" data-i18n="pick_hint">Выберите страну и регион</div>
       <div class="extra-tags" id="extraTags"></div>
-      <div class="price-tag" id="priceText">Ожидание генерации</div>
+      <div class="price-tag" id="priceText" data-i18n="wait_gen">Ожидание генерации</div>
     </div>
-
     <div class="controls">
       <button class="btn-generate" id="btnGenerate">🎰 Сгенерировать (200 ₽)</button>
       <div class="btn-group">
@@ -348,323 +398,568 @@ button:disabled{opacity:.35;cursor:not-allowed;filter:grayscale(.7);}
       </div>
       <button class="btn-daily" id="btnDaily">🎁 Ежедневный бонус</button>
     </div>
-    <div class="cost-info">Крутые номера на престижных регионах стоят миллионы</div>
+    <div class="cost-info" data-i18n="hint_regions">Крутые номера на престижных регионах стоят миллионы</div>
   </div>
 
-  <!-- GARAGE VIEW -->
+  <!-- GARAGE -->
   <div id="view-garage" style="display:none;flex-direction:column;gap:8px;">
     <div class="toolbar">
-      <input type="text" id="searchInput" placeholder="🔍 Поиск (напр. 777)">
+      <input type="text" id="searchInput" data-i18n-ph="search_ph" placeholder="🔍 Поиск">
       <select id="sortSelect">
-        <option value="price-desc">💰 Дорогие → дешёвые</option>
-        <option value="price-asc">💰 Дешёвые → дорогие</option>
-        <option value="rarity-desc">⭐ Редкие → обычные</option>
-        <option value="rarity-asc">⭐ Обычные → редкие</option>
-        <option value="country">🌎 По стране</option>
-        <option value="region">📍 По региону</option>
-        <option value="new">🆕 Сначала новые</option>
+        <option value="price-desc" data-i18n="sort_price_desc">💰 Дорогие → дешёвые</option>
+        <option value="price-asc" data-i18n="sort_price_asc">💰 Дешёвые → дорогие</option>
+        <option value="rarity-desc" data-i18n="sort_rarity_desc">⭐ Редкие → обычные</option>
+        <option value="rarity-asc" data-i18n="sort_rarity_asc">⭐ Обычные → редкие</option>
+        <option value="country" data-i18n="sort_country">🌎 По стране</option>
+        <option value="region" data-i18n="sort_region">📍 По региону</option>
+        <option value="new" data-i18n="sort_new">🆕 Новые</option>
       </select>
     </div>
+    <div class="toolbar">
+      <select id="filterCountry"><option value="" data-i18n="filter_all_c">Все страны</option></select>
+      <select id="filterRarity"><option value="" data-i18n="filter_all_r">Все редкости</option></select>
+      <select id="filterFav"><option value="" data-i18n="filter_fav_any">Все</option><option value="1" data-i18n="filter_fav_only">⭐ Только избранные</option></select>
+    </div>
     <div class="list-container" id="garageList"></div>
-    <button class="btn-sell" id="btnSellAll" style="padding:10px;">💸 Продать все (кроме избранных)</button>
+    <button class="btn-sell" id="btnSellAll" style="padding:10px;" data-i18n="sell_all">💸 Продать все (кроме избранных)</button>
   </div>
 
-  <!-- MARKET VIEW -->
+  <!-- MARKET -->
   <div id="view-market" style="display:none;flex-direction:column;gap:8px;">
     <div class="tabs" style="gap:4px;">
-      <div class="tab active" data-mkt="popular" style="font-size:10px;">🔥 Популярные</div>
-      <div class="tab" data-mkt="pricey" style="font-size:10px;">💎 Дорогие</div>
-      <div class="tab" data-mkt="new" style="font-size:10px;">🆕 Новые</div>
+      <div class="tab active" data-mkt="popular" style="font-size:10px;" data-i18n="mkt_pop">🔥 Популярные</div>
+      <div class="tab" data-mkt="pricey" style="font-size:10px;" data-i18n="mkt_pricey">💎 Дорогие</div>
+      <div class="tab" data-mkt="new" style="font-size:10px;" data-i18n="mkt_new">🆕 Новые</div>
     </div>
     <div class="list-container" id="marketList"></div>
   </div>
 
-  <!-- TOP VIEW -->
+  <!-- TOP -->
   <div id="view-top" style="display:none;flex-direction:column;gap:8px;">
-    <div style="font-size:14px;font-weight:900;color:var(--accent);text-align:center;letter-spacing:2px;">🏆 ТОП НОМЕРОВ</div>
+    <div style="font-size:14px;font-weight:900;color:var(--accent);text-align:center;letter-spacing:2px;" data-i18n="top_title">🏆 ТОП НОМЕРОВ</div>
     <div class="list-container" id="topList"></div>
   </div>
 
-  <!-- STATS VIEW -->
-  <div id="view-stats" style="display:none;flex-direction:column;gap:10px;">
-    <div class="stats-grid" id="statsGrid"></div>
-    <div style="font-size:12px;font-weight:900;color:var(--accent);letter-spacing:2px;text-align:center;margin-top:6px;">🏅 ДОСТИЖЕНИЯ</div>
-    <div class="list-container" id="achList" style="max-height:220px;"></div>
-    <div class="vol-row">
-      <span>🔊 Звук:</span>
-      <input type="range" id="volSlider" min="0" max="100" value="40">
-      <span id="volLabel">40%</span>
+  <!-- MORE (сборная солянка) -->
+  <div id="view-more" style="display:none;flex-direction:column;gap:8px;">
+    <div class="tabs" style="gap:4px;">
+      <div class="tab active" data-more="profile" data-i18n="more_profile" style="font-size:10px;">👤 Профиль</div>
+      <div class="tab" data-more="stats" data-i18n="more_stats" style="font-size:10px;">📊 Стата</div>
+      <div class="tab" data-more="ach" data-i18n="more_ach" style="font-size:10px;">🏅 Достижения</div>
+      <div class="tab" data-more="collections" data-i18n="more_collections" style="font-size:10px;">🌍 Коллекции</div>
+      <div class="tab" data-more="history" data-i18n="more_history" style="font-size:10px;">📜 История</div>
+      <div class="tab" data-more="quests" data-i18n="more_quests" style="font-size:10px;">📋 Задания</div>
+      <div class="tab" data-more="news" data-i18n="more_news" style="font-size:10px;">📰 Новости</div>
     </div>
+    <div id="more-content"></div>
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Gen overlay -->
 <div class="gen-overlay" id="genOverlay">
   <div class="gen-spinner"></div>
-  <div class="gen-text">ГЕНЕРАЦИЯ...</div>
+  <div class="gen-text" data-i18n="generating">ГЕНЕРАЦИЯ...</div>
   <div class="gen-stage" id="genStage"></div>
 </div>
 
-<!-- Jackpot -->
 <div class="jackpot" id="jackpot">
   <div class="jackpot-rays" id="jackpotRays"></div>
-  <div class="jackpot-sub">🎊 НЕВЕРОЯТНАЯ НАХОДКА 🎊</div>
-  <div class="jackpot-title" id="jackpotTitle">УНИКАЛЬНЫЙ НОМЕР</div>
+  <div class="jackpot-sub" data-i18n="jackpot_sub">🎊 НЕВЕРОЯТНАЯ НАХОДКА 🎊</div>
+  <div class="jackpot-title" id="jackpotTitle" data-i18n="jackpot_title">УНИКАЛЬНЫЙ НОМЕР</div>
   <div class="jackpot-plate" id="jackpotPlate"></div>
   <div class="jackpot-rarity" id="jackpotRarity"></div>
   <div class="jackpot-price" id="jackpotPrice"></div>
-  <button class="jackpot-btn" onclick="closeJackpot()">ЗАБРАТЬ В ГАРАЖ</button>
+  <button class="jackpot-btn" onclick="closeJackpot()" data-i18n="jackpot_take">ЗАБРАТЬ В ГАРАЖ</button>
 </div>
 
-<!-- Modal -->
 <div class="modal" id="modal">
   <div class="modal-box" id="modalBox"></div>
 </div>
 
+<div class="onboarding" id="onboarding">
+  <div class="onboarding-icon" id="onbIcon">🎰</div>
+  <div class="onboarding-step" id="onbText"></div>
+  <div class="onboarding-btns">
+    <button class="btn-cancel" onclick="nextOnb(-1)" id="onbPrev" data-i18n="back">Назад</button>
+    <button class="btn-confirm" onclick="nextOnb(1)" id="onbNext" data-i18n="next">Далее</button>
+  </div>
+</div>
+
+<div class="save-warning" id="saveWarning"></div>
+
 <script>
 /* =========================================================
-   CONFIG
+   [ABIBOK] BERKUT GARAGE v3 — Final Update
+   Save v2 -> v3 with full migration + backup
    ========================================================= */
-const LETTERS = 'ABCEHKMOPTXY'; // ГОСТ-подобный набор
+
+/* ---------- I18N ---------- */
+const I18N = {
+  ru: {
+    title:'Berkut Garage', subtitle:'Симулятор Номеров v3',
+    luck:'Удача', level:'Уровень', gens:'Генераций', balance:'Баланс',
+    tab_gen:'Генератор', tab_garage:'Гараж', tab_market:'Рынок', tab_top:'🏆 ТОП', tab_more:'⋯ Ещё',
+    pick_hint:'Выберите страну и регион', wait_gen:'Ожидание генерации',
+    hint_regions:'Крутые номера на престижных регионах стоят миллионы',
+    sell_all:'💸 Продать все (кроме избранных)',
+    search_ph:'🔍 Поиск', sort_price_desc:'💰 Дорогие → дешёвые', sort_price_asc:'💰 Дешёвые → дорогие',
+    sort_rarity_desc:'⭐ Редкие → обычные', sort_rarity_asc:'⭐ Обычные → редкие',
+    sort_country:'🌎 По стране', sort_region:'📍 По региону', sort_new:'🆕 Новые',
+    filter_all_c:'Все страны', filter_all_r:'Все редкости', filter_fav_any:'Все', filter_fav_only:'⭐ Только избранные',
+    mkt_pop:'🔥 Популярные', mkt_pricey:'💎 Дорогие', mkt_new:'🆕 Новые',
+    top_title:'🏆 ТОП НОМЕРОВ',
+    more_profile:'👤 Профиль', more_stats:'📊 Стата', more_ach:'🏅 Достижения',
+    more_collections:'🌍 Коллекции', more_history:'📜 История', more_quests:'📋 Задания', more_news:'📰 Новости',
+    generating:'ГЕНЕРАЦИЯ...',
+    jackpot_sub:'🎊 НЕВЕРОЯТНАЯ НАХОДКА 🎊', jackpot_title:'УНИКАЛЬНЫЙ НОМЕР', jackpot_take:'ЗАБРАТЬ В ГАРАЖ',
+    back:'Назад', next:'Далее', done:'Готово',
+    common:'Обычный', uncommon:'Необычный', beautiful:'Красивый', rare:'Редкий',
+    veryrare:'Очень редкий', epic:'Эпический', legendary:'Легендарный', unique:'Уникальный',
+    sold:'Продано', added:'Добавлено в гараж', settings:'Настройки', close:'Закрыть',
+    confirm_sell:'Продать', cancel:'Отмена', yes:'Да', no:'Нет',
+    sell_question:'Продать номер?', all_sell:'Продать все номера?',
+    dailytaken:'Бонус получен', notenough:'Недостаточно средств', favorite_warn:'⭐ Сначала снимите с избранного',
+    claim:'Забрать', levelup:'Уровень', achievement:'Достижение'
+  },
+  uk: {
+    title:'Berkut Garage', subtitle:'Симулятор Номерів v3',
+    luck:'Удача', level:'Рівень', gens:'Генерацій', balance:'Баланс',
+    tab_gen:'Генератор', tab_garage:'Гараж', tab_market:'Ринок', tab_top:'🏆 ТОП', tab_more:'⋯ Ще',
+    pick_hint:'Оберіть країну та регіон', wait_gen:'Очікування генерації',
+    hint_regions:'Круті номери на престижних регіонах коштують мільйони',
+    sell_all:'💸 Продати всі (крім обраних)',
+    search_ph:'🔍 Пошук', sort_price_desc:'💰 Дорогі → дешеві', sort_price_asc:'💰 Дешеві → дорогі',
+    sort_rarity_desc:'⭐ Рідкісні → звичайні', sort_rarity_asc:'⭐ Звичайні → рідкісні',
+    sort_country:'🌎 За країною', sort_region:'📍 За регіоном', sort_new:'🆕 Нові',
+    filter_all_c:'Всі країни', filter_all_r:'Всі рідкості', filter_fav_any:'Всі', filter_fav_only:'⭐ Тільки обрані',
+    mkt_pop:'🔥 Популярні', mkt_pricey:'💎 Дорогі', mkt_new:'🆕 Нові',
+    top_title:'🏆 ТОП НОМЕРІВ',
+    more_profile:'👤 Профіль', more_stats:'📊 Стата', more_ach:'🏅 Досягнення',
+    more_collections:'🌍 Колекції', more_history:'📜 Історія', more_quests:'📋 Завдання', more_news:'📰 Новини',
+    generating:'ГЕНЕРАЦІЯ...',
+    jackpot_sub:'🎊 НЕЙМОВІРНА ЗНАХІДКА 🎊', jackpot_title:'УНІКАЛЬНИЙ НОМЕР', jackpot_take:'ЗАБРАТИ В ГАРАЖ',
+    back:'Назад', next:'Далі', done:'Готово',
+    common:'Звичайний', uncommon:'Незвичайний', beautiful:'Гарний', rare:'Рідкісний',
+    veryrare:'Дуже рідкісний', epic:'Епічний', legendary:'Легендарний', unique:'Унікальний',
+    sold:'Продано', added:'Додано в гараж', settings:'Налаштування', close:'Закрити',
+    confirm_sell:'Продати', cancel:'Скасувати', yes:'Так', no:'Ні',
+    sell_question:'Продати номер?', all_sell:'Продати всі номери?',
+    dailytaken:'Бонус отримано', notenough:'Недостатньо коштів', favorite_warn:'⭐ Спочатку зніміть з обраного',
+    claim:'Забрати', levelup:'Рівень', achievement:'Досягнення'
+  },
+  kk: {
+    title:'Berkut Garage', subtitle:'Нөмірлер Симуляторы v3',
+    luck:'Сәттілік', level:'Деңгей', gens:'Генерация', balance:'Баланс',
+    tab_gen:'Генератор', tab_garage:'Гараж', tab_market:'Нарық', tab_top:'🏆 ТОП', tab_more:'⋯ Тағы',
+    pick_hint:'Ел мен аймақты таңдаңыз', wait_gen:'Генерацияны күту',
+    hint_regions:'Беделді аймақтардағы керемет нөмірлер миллиондар тұрады',
+    sell_all:'💸 Барлығын сату (таңдаулылардан басқа)',
+    search_ph:'🔍 Іздеу', sort_price_desc:'💰 Қымбат → арзан', sort_price_asc:'💰 Арзан → қымбат',
+    sort_rarity_desc:'⭐ Сирек → кәдімгі', sort_rarity_asc:'⭐ Кәдімгі → сирек',
+    sort_country:'🌎 Ел бойынша', sort_region:'📍 Аймақ бойынша', sort_new:'🆕 Жаңалар',
+    filter_all_c:'Барлық елдер', filter_all_r:'Барлық сиректік', filter_fav_any:'Барлығы', filter_fav_only:'⭐ Тек таңдаулылар',
+    mkt_pop:'🔥 Танымал', mkt_pricey:'💎 Қымбат', mkt_new:'🆕 Жаңа',
+    top_title:'🏆 ҮЗДІК НӨМІРЛЕР',
+    more_profile:'👤 Профиль', more_stats:'📊 Стат', more_ach:'🏅 Жетістіктер',
+    more_collections:'🌍 Коллекциялар', more_history:'📜 Тарих', more_quests:'📋 Тапсырмалар', more_news:'📰 Жаңалықтар',
+    generating:'ГЕНЕРАЦИЯ...',
+    jackpot_sub:'🎊 КЕРЕМЕТ ТАБЫЛДЫ 🎊', jackpot_title:'БІРЕГЕЙ НӨМІР', jackpot_take:'ГАРАЖҒА АЛУ',
+    back:'Артқа', next:'Келесі', done:'Дайын',
+    common:'Кәдімгі', uncommon:'Сирек емес', beautiful:'Әдемі', rare:'Сирек',
+    veryrare:'Өте сирек', epic:'Эпикалық', legendary:'Аңыздық', unique:'Бірегей',
+    sold:'Сатылды', added:'Гаражға қосылды', settings:'Параметрлер', close:'Жабу',
+    confirm_sell:'Сату', cancel:'Болдырмау', yes:'Иә', no:'Жоқ',
+    sell_question:'Нөмірді сату?', all_sell:'Барлық нөмірлерді сату?',
+    dailytaken:'Бонус алынды', notenough:'Қаражат жеткіліксіз', favorite_warn:'⭐ Алдымен таңдаулыдан алыңыз',
+    claim:'Алу', levelup:'Деңгей', achievement:'Жетістік'
+  },
+  be: {
+    title:'Berkut Garage', subtitle:'Сімулятар Нумароў v3',
+    luck:'Удача', level:'Узровень', gens:'Генерацый', balance:'Баланс',
+    tab_gen:'Генератар', tab_garage:'Гараж', tab_market:'Рынак', tab_top:'🏆 ТОП', tab_more:'⋯ Яшчэ',
+    pick_hint:'Абярыце краіну і рэгіён', wait_gen:'Чаканне генерацыі',
+    hint_regions:'Крутыя нумары на прэстыжных рэгіёнах каштуюць мільёны',
+    sell_all:'💸 Прадаць усе (акрамя абраных)',
+    search_ph:'🔍 Пошук', sort_price_desc:'💰 Дарагія → танныя', sort_price_asc:'💰 Танныя → дарагія',
+    sort_rarity_desc:'⭐ Рэдкія → звычайныя', sort_rarity_asc:'⭐ Звычайныя → рэдкія',
+    sort_country:'🌎 Па краіне', sort_region:'📍 Па рэгіёне', sort_new:'🆕 Новыя',
+    filter_all_c:'Усе краіны', filter_all_r:'Усе рэдкасці', filter_fav_any:'Усе', filter_fav_only:'⭐ Толькі абраныя',
+    mkt_pop:'🔥 Папулярныя', mkt_pricey:'💎 Дарагія', mkt_new:'🆕 Новыя',
+    top_title:'🏆 ТОП НУМАРОЎ',
+    more_profile:'👤 Профіль', more_stats:'📊 Стата', more_ach:'🏅 Дасягненні',
+    more_collections:'🌍 Калекцыі', more_history:'📜 Гісторыя', more_quests:'📋 Заданні', more_news:'📰 Навіны',
+    generating:'ГЕНЕРАЦЫЯ...',
+    jackpot_sub:'🎊 НЕВЕРАГОДНАЯ ЗНАХОДКА 🎊', jackpot_title:'УНІКАЛЬНЫ НУМАР', jackpot_take:'ЗАБРАЦЬ У ГАРАЖ',
+    back:'Назад', next:'Далей', done:'Гатова',
+    common:'Звычайны', uncommon:'Незвычайны', beautiful:'Прыгожы', rare:'Рэдкі',
+    veryrare:'Вельмі рэдкі', epic:'Эпічны', legendary:'Легендарны', unique:'Унікальны',
+    sold:'Прададзена', added:'Дададзена ў гараж', settings:'Налады', close:'Закрыць',
+    confirm_sell:'Прадаць', cancel:'Адмена', yes:'Так', no:'Не',
+    sell_question:'Прадаць нумар?', all_sell:'Прадаць усе нумары?',
+    dailytaken:'Бонус атрыманы', notenough:'Недастаткова сродкаў', favorite_warn:'⭐ Спачатку зніміце з абранага',
+    claim:'Забраць', levelup:'Узровень', achievement:'Дасягненне'
+  },
+  en: {
+    title:'Berkut Garage', subtitle:'License Plate Simulator v3',
+    luck:'Luck', level:'Level', gens:'Generations', balance:'Balance',
+    tab_gen:'Generator', tab_garage:'Garage', tab_market:'Market', tab_top:'🏆 TOP', tab_more:'⋯ More',
+    pick_hint:'Select a country and region', wait_gen:'Waiting for generation',
+    hint_regions:'Cool plates in prestigious regions cost millions',
+    sell_all:'💸 Sell all (except favorites)',
+    search_ph:'🔍 Search', sort_price_desc:'💰 Expensive → cheap', sort_price_asc:'💰 Cheap → expensive',
+    sort_rarity_desc:'⭐ Rare → common', sort_rarity_asc:'⭐ Common → rare',
+    sort_country:'🌎 By country', sort_region:'📍 By region', sort_new:'🆕 New',
+    filter_all_c:'All countries', filter_all_r:'All rarities', filter_fav_any:'All', filter_fav_only:'⭐ Favorites only',
+    mkt_pop:'🔥 Popular', mkt_pricey:'💎 Expensive', mkt_new:'🆕 New',
+    top_title:'🏆 TOP PLATES',
+    more_profile:'👤 Profile', more_stats:'📊 Stats', more_ach:'🏅 Achievements',
+    more_collections:'🌍 Collections', more_history:'📜 History', more_quests:'📋 Quests', more_news:'📰 News',
+    generating:'GENERATING...',
+    jackpot_sub:'🎊 INCREDIBLE FIND 🎊', jackpot_title:'UNIQUE PLATE', jackpot_take:'TAKE TO GARAGE',
+    back:'Back', next:'Next', done:'Done',
+    common:'Common', uncommon:'Uncommon', beautiful:'Beautiful', rare:'Rare',
+    veryrare:'Very Rare', epic:'Epic', legendary:'Legendary', unique:'Unique',
+    sold:'Sold', added:'Added to garage', settings:'Settings', close:'Close',
+    confirm_sell:'Sell', cancel:'Cancel', yes:'Yes', no:'No',
+    sell_question:'Sell plate?', all_sell:'Sell all plates?',
+    dailytaken:'Bonus claimed', notenough:'Not enough funds', favorite_warn:'⭐ Remove from favorites first',
+    claim:'Claim', levelup:'Level', achievement:'Achievement'
+  }
+};
+let currentLang = 'ru';
+function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || I18N.ru[key] || key; }
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.dataset.i18n;
+    el.textContent = t(k);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const k = el.dataset.i18nPh;
+    el.placeholder = t(k);
+  });
+  document.documentElement.lang = currentLang;
+  if (typeof render === 'function') render();
+}
+
+/* ---------- CONFIG ---------- */
+const LETTERS = 'ABCEHKMOPTXY';
 const LETTERS_UA = 'ABCEHIKMOPTX';
 const LETTERS_KZ = 'ABCDEFGHKLMNOPRSTUVXYZ';
 const LETTERS_BY = 'ABCEHIKMOPTXY';
 
 const COUNTRIES = {
-  RU: {
-    name: 'Россия', flag: '🇷🇺', code: 'RUS', cls: 'lic-RU',
-    letters: LETTERS,
-    // Формат: L DDD LL + region (2-3)
-    regions: {
-      '77':{name:'Москва',mult:5}, '99':{name:'Москва',mult:8}, '97':{name:'Москва',mult:12},
-      '177':{name:'Москва',mult:4}, '199':{name:'Москва',mult:6}, '197':{name:'Москва',mult:7},
-      '799':{name:'Москва',mult:6},
-      '78':{name:'СПб',mult:4}, '98':{name:'СПб',mult:5}, '178':{name:'СПб',mult:3}, '198':{name:'СПб',mult:4},
-      '23':{name:'Краснодар',mult:3}, '93':{name:'Краснодар',mult:4}, '123':{name:'Краснодар',mult:5},
-      '01':{name:'Адыгея',mult:1}, '02':{name:'Башкортостан',mult:1.5},
-      '66':{name:'Свердловская',mult:2}, '196':{name:'Свердловская',mult:2.5},
-      '116':{name:'Татарстан',mult:2}, '16':{name:'Татарстан',mult:1.8},
-      '161':{name:'Ростов',mult:2}, '61':{name:'Ростов',mult:1.5},
-      '34':{name:'Волгоград',mult:1.2}, '36':{name:'Воронеж',mult:1.2},
-      '47':{name:'Ленобласть',mult:1.2}, '50':{name:'МО',mult:1.4},
-      '90':{name:'МО',mult:1.6}, '150':{name:'МО',mult:1.3},
-      '750':{name:'МО',mult:1.4}, '190':{name:'МО',mult:1.5},
-      '05':{name:'Дагестан',mult:1.1}, '95':{name:'Чечня',mult:1.3}
-    },
-    flagCss: 'linear-gradient(to bottom,#fff 33%,#0039a6 33%,#0039a6 66%,#d52b1e 66%)'
-  },
-  UA: {
-    name: 'Украина', flag: '🇺🇦', code: 'UA', cls: 'lic-UA',
-    letters: LETTERS_UA,
-    // Формат: LL DDDD LL + region (2 letters)
-    regions: {
-      'AA':{name:'Киев',mult:6}, 'KA':{name:'Киев',mult:5}, 'AI':{name:'Киевская',mult:3},
-      'BC':{name:'Львов',mult:3}, 'AX':{name:'Харьков',mult:3},
-      'BH':{name:'Одесса',mult:3.5}, 'OC':{name:'Одесская',mult:2.5},
-      'AE':{name:'Днепр',mult:2.5}, 'CE':{name:'Донецк',mult:1.5},
-      'BT':{name:'Запорожье',mult:1.5}, 'PP':{name:'Закарпатье',mult:1.2},
-      'CI':{name:'Херсон',mult:1.1}, 'BB':{name:'Винница',mult:1.2},
-      'CB':{name:'Черкассы',mult:1.1}, 'IB':{name:'Ивано-Франковск',mult:1.2}
-    },
-    flagCss: 'linear-gradient(to bottom,#0057b7 50%,#ffd700 50%)'
-  },
-  KZ: {
-    name: 'Казахстан', flag: '🇰🇿', code: 'KZ', cls: 'lic-KZ',
-    letters: LETTERS_KZ,
-    // Формат: DDD LL + region (2 digit)
-    regions: {
-      '01':{name:'Астана',mult:5}, '02':{name:'Алматы',mult:6},
-      '03':{name:'Акмолинская',mult:1.5}, '04':{name:'Актюбинская',mult:1.3},
-      '05':{name:'Алматинская',mult:1.8}, '06':{name:'Атырауская',mult:1.7},
-      '07':{name:'ВКО',mult:1.2}, '08':{name:'Жамбылская',mult:1.2},
-      '09':{name:'ЗКО',mult:1.2}, '10':{name:'Карагандинская',mult:1.8},
-      '11':{name:'Костанайская',mult:1.3}, '12':{name:'Кызылординская',mult:1.1},
-      '13':{name:'Мангистауская',mult:1.5}, '14':{name:'Павлодарская',mult:1.3},
-      '15':{name:'СКО',mult:1.2}, '16':{name:'Туркестанская',mult:1.2},
-      '17':{name:'Шымкент',mult:2.5}, '18':{name:'Абайская',mult:1.1},
-      '19':{name:'Жетысуская',mult:1.1}, '20':{name:'Улытауская',mult:1.1}
-    },
-    flagCss: 'linear-gradient(to bottom,#00afca 100%)'
-  },
-  BY: {
-    name: 'Беларусь', flag: '🇧🇾', code: 'BY', cls: 'lic-BY',
-    letters: LETTERS_BY,
-    // Формат: DDDD LL + region (1 digit)
-    regions: {
-      '7':{name:'Минск',mult:6}, '1':{name:'Брестская',mult:2},
-      '2':{name:'Витебская',mult:1.8}, '3':{name:'Гомельская',mult:1.8},
-      '4':{name:'Гродненская',mult:1.7}, '5':{name:'Минская',mult:2.2},
+  RU:{name:'Россия',flag:'🇷🇺',code:'RUS',cls:'lic-RU',letters:LETTERS,
+    flagCss:'linear-gradient(to bottom,#fff 33%,#0039a6 33%,#0039a6 66%,#d52b1e 66%)',
+    regions:{
+      '77':{name:'Москва',mult:5},'99':{name:'Москва',mult:8},'97':{name:'Москва',mult:12},
+      '177':{name:'Москва',mult:4},'199':{name:'Москва',mult:6},'197':{name:'Москва',mult:7},'799':{name:'Москва',mult:6},
+      '78':{name:'СПб',mult:4},'98':{name:'СПб',mult:5},'178':{name:'СПб',mult:3},'198':{name:'СПб',mult:4},
+      '23':{name:'Краснодар',mult:3},'93':{name:'Краснодар',mult:4},'123':{name:'Краснодар',mult:5},
+      '01':{name:'Адыгея',mult:1},'02':{name:'Башкортостан',mult:1.5},
+      '66':{name:'Свердловская',mult:2},'196':{name:'Свердловская',mult:2.5},
+      '116':{name:'Татарстан',mult:2},'16':{name:'Татарстан',mult:1.8},
+      '161':{name:'Ростов',mult:2},'61':{name:'Ростов',mult:1.5},
+      '34':{name:'Волгоград',mult:1.2},'36':{name:'Воронеж',mult:1.2},
+      '47':{name:'Ленобласть',mult:1.2},'50':{name:'МО',mult:1.4},
+      '90':{name:'МО',mult:1.6},'150':{name:'МО',mult:1.3},'750':{name:'МО',mult:1.4},'190':{name:'МО',mult:1.5},
+      '05':{name:'Дагестан',mult:1.1},'95':{name:'Чечня',mult:1.3}
+    }},
+  UA:{name:'Украина',flag:'🇺🇦',code:'UA',cls:'lic-UA',letters:LETTERS_UA,
+    flagCss:'linear-gradient(to bottom,#0057b7 50%,#ffd700 50%)',
+    regions:{
+      'AA':{name:'Киев',mult:6},'KA':{name:'Киев',mult:5},'AI':{name:'Киевская',mult:3},
+      'BC':{name:'Львов',mult:3},'AX':{name:'Харьков',mult:3},
+      'BH':{name:'Одесса',mult:3.5},'OC':{name:'Одесская',mult:2.5},
+      'AE':{name:'Днепр',mult:2.5},'CE':{name:'Донецк',mult:1.5},
+      'BT':{name:'Запорожье',mult:1.5},'PP':{name:'Закарпатье',mult:1.2},
+      'CI':{name:'Херсон',mult:1.1},'BB':{name:'Винница',mult:1.2},
+      'CB':{name:'Черкассы',mult:1.1},'IB':{name:'Ивано-Франковск',mult:1.2}
+    }},
+  KZ:{name:'Казахстан',flag:'🇰🇿',code:'KZ',cls:'lic-KZ',letters:LETTERS_KZ,
+    flagCss:'linear-gradient(to bottom,#00afca 100%)',
+    regions:{
+      '01':{name:'Астана',mult:5},'02':{name:'Алматы',mult:6},
+      '03':{name:'Акмолинская',mult:1.5},'04':{name:'Актюбинская',mult:1.3},
+      '05':{name:'Алматинская',mult:1.8},'06':{name:'Атырауская',mult:1.7},
+      '07':{name:'ВКО',mult:1.2},'08':{name:'Жамбылская',mult:1.2},
+      '09':{name:'ЗКО',mult:1.2},'10':{name:'Карагандинская',mult:1.8},
+      '11':{name:'Костанайская',mult:1.3},'12':{name:'Кызылординская',mult:1.1},
+      '13':{name:'Мангистауская',mult:1.5},'14':{name:'Павлодарская',mult:1.3},
+      '15':{name:'СКО',mult:1.2},'16':{name:'Туркестанская',mult:1.2},
+      '17':{name:'Шымкент',mult:2.5},'18':{name:'Абайская',mult:1.1},
+      '19':{name:'Жетысуская',mult:1.1},'20':{name:'Улытауская',mult:1.1}
+    }},
+  BY:{name:'Беларусь',flag:'🇧🇾',code:'BY',cls:'lic-BY',letters:LETTERS_BY,
+    flagCss:'linear-gradient(to bottom,#c8102e 66%,#00af66 66%)',
+    regions:{
+      '7':{name:'Минск',mult:6},'1':{name:'Брестская',mult:2},
+      '2':{name:'Витебская',mult:1.8},'3':{name:'Гомельская',mult:1.8},
+      '4':{name:'Гродненская',mult:1.7},'5':{name:'Минская',mult:2.2},
       '6':{name:'Могилёвская',mult:1.6}
-    },
-    flagCss: 'linear-gradient(to bottom,#c8102e 66%,#00af66 66%)'
-  }
+    }}
 };
 
 const RARITY_TIERS = [
-  {key:'common',   name:'Обычный',       cls:'common',    min:0,      color:'#a0a0a0'},
-  {key:'uncommon', name:'Необычный',     cls:'uncommon',  min:2000,   color:'#2ecc71'},
-  {key:'beautiful',name:'Красивый',      cls:'beautiful', min:8000,   color:'#3498db'},
-  {key:'rare',     name:'Редкий',        cls:'rare',      min:30000,  color:'#9b59b6'},
-  {key:'veryrare', name:'Очень редкий',  cls:'veryrare',  min:120000, color:'#00d4ff'},
-  {key:'epic',     name:'Эпический',     cls:'epic',      min:400000, color:'#ff4fa3'},
-  {key:'legendary',name:'Легендарный',   cls:'legendary', min:1200000,color:'#d4af37'},
-  {key:'unique',   name:'Уникальный',    cls:'unique',    min:4000000,color:'#e74c3c'}
+  {key:'common',min:0,color:'#a0a0a0'},
+  {key:'uncommon',min:2000,color:'#2ecc71'},
+  {key:'beautiful',min:8000,color:'#3498db'},
+  {key:'rare',min:30000,color:'#9b59b6'},
+  {key:'veryrare',min:120000,color:'#00d4ff'},
+  {key:'epic',min:400000,color:'#ff4fa3'},
+  {key:'legendary',min:1200000,color:'#d4af37'},
+  {key:'unique',min:4000000,color:'#e74c3c'}
 ];
+function rarityName(k){ return t(k); }
 
 const SPECIAL_TAGS = {
-  gold:      {name:'Золотой номер',  icon:'🥇', bonus:1.4},
-  mirror:    {name:'Зеркальный',     icon:'🪞', bonus:1.25},
-  repeat:    {name:'Повтор',         icon:'🔁', bonus:1.15},
-  triple:    {name:'Тройной',        icon:'3️⃣', bonus:1.3},
-  quad:      {name:'Четверной',      icon:'4️⃣', bonus:1.6},
-  ladder:    {name:'Лестница',       icon:'🪜', bonus:1.4},
-  palindrome:{name:'Палиндром',      icon:'🔄', bonus:1.35},
-  vip:       {name:'VIP',            icon:'👑', bonus:1.5},
-  collection:{name:'Коллекционный',  icon:'📚', bonus:1.2},
-  jackpot:   {name:'ДЖЕКПОТ',        icon:'🎰', bonus:2.5}
+  gold:{name:'🥇 Gold', icon:'🥇'}, mirror:{name:'🪞 Mirror', icon:'🪞'},
+  repeat:{name:'🔁 Repeat', icon:'🔁'}, triple:{name:'3️⃣ Triple', icon:'3️⃣'},
+  quad:{name:'4️⃣ Quad', icon:'4️⃣'}, ladder:{name:'🪜 Ladder', icon:'🪜'},
+  palindrome:{name:'🔄 Palindrom', icon:'🔄'}, vip:{name:'👑 VIP', icon:'👑'},
+  collection:{name:'📚 Collection', icon:'📚'}, jackpot:{name:'🎰 JACKPOT', icon:'🎰'}
 };
 
+const COLLECTOR_TITLES = [
+  {min:1,name:'Коллекционер I'}, {min:3,name:'Коллекционер II'},
+  {min:6,name:'Коллекционер III'}, {min:10,name:'Опытный коллекционер'},
+  {min:15,name:'Эксперт'}, {min:25,name:'Мастер'},
+  {min:40,name:'VIP-коллекционер'}, {min:60,name:'Легенда'}
+];
+function titleForLevel(lvl){
+  let t1 = COLLECTOR_TITLES[0].name;
+  for (const x of COLLECTOR_TITLES) if (lvl >= x.min) t1 = x.name;
+  return t1;
+}
+
 const ACHIEVEMENTS = [
-  {id:'first',   name:'Первый номер',        desc:'Сгенерировать первый номер',      icon:'🎫', check:s=>s.stats.totalGen>=1},
-  {id:'firstrare',name:'Первый редкий',      desc:'Получить номер редкости «Редкий»', icon:'⭐', check:s=>s.stats.rarityCount.rare+s.stats.rarityCount.veryrare+s.stats.rarityCount.epic+s.stats.rarityCount.legendary+s.stats.rarityCount.unique>=1},
-  {id:'million', name:'Первый миллион',      desc:'Заработать 1 000 000 ₽',           icon:'💰', check:s=>s.stats.totalEarned>=1000000},
-  {id:'collector',name:'Коллекционер',       desc:'Собрать 25 номеров в гараже',     icon:'📦', check:s=>s.garage.length>=25},
-  {id:'legend',  name:'Охотник за легендами',desc:'Найти 5 легендарных номеров',     icon:'🏆', check:s=>s.stats.rarityCount.legendary>=5},
-  {id:'jackpot', name:'Джекпот',             desc:'Получить уникальный номер',        icon:'🎰', check:s=>s.stats.rarityCount.unique>=1},
-  {id:'intl',    name:'Международный',       desc:'Иметь номера всех 4 стран',        icon:'🌍', check:s=>new Set(s.garage.map(p=>p.country)).size>=4},
-  {id:'level10', name:'Профи',               desc:'Достичь 10 уровня',                icon:'🎖', check:s=>s.level>=10},
-  {id:'sell100', name:'Торговец',            desc:'Продать 100 номеров',              icon:'💸', check:s=>s.stats.totalSold>=100}
+  {id:'first',name:'Первый номер',desc:'Сгенерировать первый номер',icon:'🎫',check:s=>s.stats.totalGen>=1},
+  {id:'firstrare',name:'Первый редкий',desc:'Получить редкость «Редкий»+',icon:'⭐',
+    check:s=>{const r=s.stats.rarityCount;return (r.rare+r.veryrare+r.epic+r.legendary+r.unique)>=1}},
+  {id:'hunter',name:'Охотник',desc:'Сгенерировать 100 номеров',icon:'🏹',check:s=>s.stats.totalGen>=100},
+  {id:'collector',name:'Коллекционер',desc:'Собрать 50 номеров',icon:'📦',check:s=>s.garage.length>=50},
+  {id:'million',name:'Миллионер',desc:'Заработать 1 000 000 ₽',icon:'💰',check:s=>s.stats.totalEarned>=1000000},
+  {id:'legendhunt',name:'Охота за легендой',desc:'Получить легендарный номер',icon:'🏆',check:s=>s.stats.rarityCount.legendary>=1},
+  {id:'jackpot',name:'Джекпот',desc:'Получить уникальный номер',icon:'🎰',check:s=>s.stats.rarityCount.unique>=1},
+  {id:'intl',name:'Международный коллекционер',desc:'Номера всех 4 стран',icon:'🌍',
+    check:s=>new Set(s.garage.map(p=>p.country)).size>=4},
+  {id:'regional',name:'Региональный эксперт',desc:'20+ регионов в гараже',icon:'🗺',
+    check:s=>new Set(s.garage.map(p=>p.country+':'+p.region)).size>=20},
+  {id:'level10',name:'Профи',desc:'Уровень 10',icon:'🎖',check:s=>s.level>=10},
+  {id:'sell100',name:'Торговец',desc:'Продать 100 номеров',icon:'💸',check:s=>s.stats.totalSold>=100},
+  {id:'secret777',name:'Секрет: Три семёрки',desc:'Найти 777 или 7777',icon:'🎯',
+    check:s=>s.garage.some(p=>p.main.includes('777'))},
+  {id:'secret888',name:'Секрет: Богатство',desc:'Найти 888',icon:'💎',
+    check:s=>s.garage.some(p=>p.main.includes('888'))}
 ];
 
 const EVENTS = [
-  {id:'beauty', name:'🔥 Неделя красивых номеров',  desc:'Шанс красивых комбинаций +50%', mult:{beauty:1.5}},
-  {id:'ru',     name:'🇷🇺 Российская неделя',       desc:'Больше российских номеров',     mult:{countryRU:2}},
-  {id:'legend', name:'💎 Охота за легендой',        desc:'Шанс легендарных +25%',         mult:{legendary:1.25}},
-  {id:'demand', name:'📈 Рост спроса',              desc:'Стоимость регионов +30%',        mult:{price:1.3}},
-  {id:'lucky',  name:'🎰 Счастливый день',          desc:'Удача +0.5x',                    mult:{luck:0.5}}
+  {id:'beauty',name:'🔥 Неделя красивых номеров',desc:'Шанс красивых +50%',mult:{}},
+  {id:'ru',name:'🇷🇺 Российская неделя',desc:'Больше российских',mult:{}},
+  {id:'legend',name:'💎 Охота за легендой',desc:'Шанс легендарных +25%',mult:{}},
+  {id:'demand',name:'📈 Рост спроса',desc:'Стоимость регионов +30%',mult:{price:1.3}},
+  {id:'lucky',name:'🎰 Счастливый день',desc:'Удача +0.5x',mult:{luck:0.5}}
 ];
 
-const TITLES = [
-  {min:1,  name:'Новичок'},
-  {min:3,  name:'Любитель'},
-  {min:6,  name:'Коллекционер'},
-  {min:10, name:'Профи'},
-  {min:15, name:'Эксперт'},
-  {min:25, name:'Мастер'},
-  {min:40, name:'Гуру номеров'},
-  {min:60, name:'Легенда гаража'}
+const NEWS_DB = [
+  {t:'Сезон 3 запущен',b:'Обновление с новыми странами, локализацией и настройками'},
+  {t:'Рынок обновлён',b:'Новые предложения появляются каждые несколько минут'},
+  {t:'Новые коллекции',b:'Собирайте номера по регионам для наград'}
 ];
 
-/* =========================================================
-   SOUND ENGINE (Web Audio API)
-   ========================================================= */
+const QUESTS_DB = [
+  {id:'gen10',name:'Сгенерировать 10 номеров',target:10,type:'gen',reward:5000,xp:50},
+  {id:'sell3',name:'Продать 3 номера',target:3,type:'sell',reward:3000,xp:30},
+  {id:'rare1',name:'Получить редкий номер',target:1,type:'rare',reward:8000,xp:80},
+  {id:'gen_ru',name:'Получить номер России',target:1,type:'ru',reward:2000,xp:20},
+  {id:'earn100k',name:'Заработать 100 000 ₽',target:100000,type:'earn',reward:10000,xp:100}
+];
+
+const PROMOCODES = {
+  'BERKUT2025':{money:50000,xp:200},
+  'WELCOME':{money:10000,xp:50},
+  'GARAGE':{money:25000,xp:100,luck:0.3},
+  'LUCKY':{luck:0.5,xp:50}
+};
+
+const DAILY_REWARDS = [
+  {type:'money',amount:5000,label:'5000 ₽'},
+  {type:'gen',amount:3,label:'3 генерации'},
+  {type:'xp',amount:150,label:'150 XP'},
+  {type:'luck',amount:0.3,label:'+0.3 Удача'},
+  {type:'rare_gen',amount:1,label:'Редкая генерация'},
+  {type:'money',amount:15000,label:'15000 ₽'},
+  {type:'big',amount:50000,label:'🎁 МЕГА-БОНУС 50 000 ₽'}
+];
+
+/* ---------- SOUND ---------- */
 const Sound = {
-  ctx: null,
-  volume: 0.4,
-  init() {
-    if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (this.ctx.state === 'suspended') this.ctx.resume();
-  },
-  tone(freq, dur, type='sine', vol=1, delay=0) {
-    if (!this.ctx || this.volume <= 0) return;
-    const t = this.ctx.currentTime + delay;
-    const o = this.ctx.createOscillator();
-    const g = this.ctx.createGain();
-    o.type = type;
-    o.frequency.setValueAtTime(freq, t);
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(this.volume * vol, t + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  ctx:null, volume:0.4, musicVol:0.2, sfxVol:0.5,
+  enabled:true, rareEnabled:true, vibration:true,
+  init(){ if(!this.ctx) this.ctx = new (window.AudioContext||window.webkitAudioContext)();
+    if(this.ctx.state==='suspended') this.ctx.resume(); },
+  tone(freq,dur,type='sine',vol=1,delay=0){
+    if(!this.ctx || !this.enabled || this.volume<=0) return;
+    const t1 = this.ctx.currentTime+delay;
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq,t1);
+    g.gain.setValueAtTime(0,t1); g.gain.linearRampToValueAtTime(this.volume*this.sfxVol*vol,t1+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001,t1+dur);
     o.connect(g); g.connect(this.ctx.destination);
-    o.start(t); o.stop(t + dur + 0.05);
+    o.start(t1); o.stop(t1+dur+0.05);
   },
-  sweep(f1, f2, dur, type='sawtooth', vol=0.5) {
-    if (!this.ctx) return;
-    const t = this.ctx.currentTime;
-    const o = this.ctx.createOscillator();
-    const g = this.ctx.createGain();
-    o.type = type;
-    o.frequency.setValueAtTime(f1, t);
-    o.frequency.exponentialRampToValueAtTime(f2, t + dur);
-    g.gain.setValueAtTime(this.volume * vol, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-    o.connect(g); g.connect(this.ctx.destination);
-    o.start(t); o.stop(t + dur);
-  },
-  spin() { for (let i = 0; i < 12; i++) this.tone(600 + i * 60, 0.05, 'square', 0.3, i * 0.06); },
-  stop()  { this.tone(880, 0.15, 'triangle', 0.8); this.tone(1320, 0.2, 'triangle', 0.6, 0.05); },
-  rare()  { [523,659,784,1047].forEach((f,i)=>this.tone(f,0.25,'triangle',0.7,i*0.08)); },
-  epic()  { [523,659,784,1047,1319].forEach((f,i)=>this.tone(f,0.3,'sawtooth',0.5,i*0.09)); },
-  legend(){ [392,523,659,784,1047,1319,1568].forEach((f,i)=>this.tone(f,0.4,'triangle',0.7,i*0.11)); },
-  jackpot(){
-    const notes = [523,659,784,1047,1319,1568,2093];
-    notes.forEach((f,i)=>{ this.tone(f,0.5,'triangle',0.8,i*0.13); this.tone(f*2,0.3,'sine',0.3,i*0.13+0.05); });
+  spin(){ if(!this.rareEnabled&&!this.enabled)return; for(let i=0;i<12;i++) this.tone(600+i*60,0.05,'square',0.3,i*0.06); },
+  stop(){ this.tone(880,0.15,'triangle',0.8); this.tone(1320,0.2,'triangle',0.6,0.05); },
+  rare(){ if(!this.rareEnabled)return; [523,659,784,1047].forEach((f,i)=>this.tone(f,0.25,'triangle',0.7,i*0.08)); },
+  epic(){ if(!this.rareEnabled)return; [523,659,784,1047,1319].forEach((f,i)=>this.tone(f,0.3,'sawtooth',0.5,i*0.09)); },
+  legend(){ if(!this.rareEnabled)return; [392,523,659,784,1047,1319,1568].forEach((f,i)=>this.tone(f,0.4,'triangle',0.7,i*0.11)); },
+  jackpot(){ if(!this.rareEnabled)return;
+    [523,659,784,1047,1319,1568,2093].forEach((f,i)=>{this.tone(f,0.5,'triangle',0.8,i*0.13);this.tone(f*2,0.3,'sine',0.3,i*0.13+0.05)});
     [0,0.5,1,1.5].forEach(d=>this.tone(60,0.4,'square',0.6,d));
   },
-  sell()  { this.tone(1200,0.1,'triangle',0.7); this.tone(1800,0.15,'triangle',0.6,0.08); },
-  buy()   { this.tone(400,0.1,'square',0.5); this.tone(600,0.1,'square',0.5,0.06); },
-  error() { this.tone(200,0.2,'sawtooth',0.5); }
+  sell(){ this.tone(1200,0.1,'triangle',0.7); this.tone(1800,0.15,'triangle',0.6,0.08); },
+  buy(){ this.tone(400,0.1,'square',0.5); this.tone(600,0.1,'square',0.5,0.06); },
+  error(){ this.tone(200,0.2,'sawtooth',0.5); },
+  vibrate(ms=30){ if(this.vibration && navigator.vibrate) navigator.vibrate(ms); }
 };
 
-/* =========================================================
-   STATE
-   ========================================================= */
+/* ---------- STATE & SAVE ARCHITECTURE ---------- */
+// Отдельно: preferences, save data (game), config
+const PREF_KEY = 'berkut_prefs_v1';
+const SAVE_KEY = 'berkut_save_v3';
+const SAVE_KEY_OLD = 'berkutGarage_v2';
+const BACKUP_KEY = 'berkut_save_v3_backup';
+const LEGACY_KEY = 'berkutGarageSave_v2';
+
+const DEFAULT_PREFS = {
+  lang: null, theme:'dark', scale:1, perfMode:false, autoLang:true,
+  volume:0.4, musicOn:true, sfxOn:true, rareSoundOn:true, vibrateOn:true,
+  quality:'high', particles:true, animations:true, rareEffects:true, blur:true,
+  textSize:1, btnSize:1, showHints:true, compactGarage:false,
+  avatar:'👤', onboarded:false, promoUsed:[],
+  lastDailyCal:0, dailyDayIdx:0
+};
+
 const DEFAULT_STATE = {
-  balance: 100000,
-  currentPlate: null,
-  garage: [],
-  selectedCountry: 'RU',
-  selectedRegion: '77',
-  luck: 1.0,
-  level: 1,
-  xp: 0,
-  luckBonus: 0,
-  currentEvent: null,
-  lastDaily: 0,
-  dailyStreak: 0,
-  stats: {
-    totalGen: 0,
-    totalSold: 0,
-    totalEarned: 0,
-    totalSpent: 0,
-    rarityCount: {common:0,uncommon:0,beautiful:0,rare:0,veryrare:0,epic:0,legendary:0,unique:0},
-    countryCount: {RU:0,UA:0,KZ:0,BY:0},
-    regionCount: {},
-    highest: null,
-    rarest: null,
-    maxSale: 0,
-    history: []
+  saveVersion:3,
+  balance:100000, currentPlate:null, garage:[],
+  selectedCountry:'RU', selectedRegion:'77',
+  luck:1.0, level:1, xp:0, luckBonus:0,
+  currentEvent:null, lastDaily:0, dailyStreak:0,
+  stats:{
+    totalGen:0, totalSold:0, totalEarned:0, totalSpent:0,
+    rarityCount:{common:0,uncommon:0,beautiful:0,rare:0,veryrare:0,epic:0,legendary:0,unique:0},
+    countryCount:{RU:0,UA:0,KZ:0,BY:0}, regionCount:{},
+    highest:null, rarest:null, maxSale:0, history:[]
   },
-  achievements: {},
-  market: [],
-  version: 2
+  achievements:{},
+  market:[],
+  questsDate:'', questsProgress:{}, questsDone:{},
+  name:'Collector', totalSales:0
 };
 
+let prefs = JSON.parse(JSON.stringify(DEFAULT_PREFS));
 let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+let currentTab = 'generator';
+let moreTab = 'profile';
+let marketFilter = 'popular';
 
-/* =========================================================
-   SAVE / LOAD
-   ========================================================= */
-function save() {
-  // Храним только нужное (без market, он генерится)
-  const toSave = {...state, market: []};
-  try { localStorage.setItem('berkutGarage_v2', JSON.stringify(toSave)); } catch(e) {}
+/* ---------- PREFERENCE STORAGE ---------- */
+function loadPrefs(){
+  try{
+    const raw = localStorage.getItem(PREF_KEY);
+    if(raw){ prefs = Object.assign(prefs, JSON.parse(raw)); }
+    else {
+      // Auto detect lang
+      const nl = (navigator.language||'ru').slice(0,2).toLowerCase();
+      const map = {ru:'ru',uk:'uk',kk:'kk',be:'be',en:'en'};
+      prefs.lang = map[nl] || 'ru';
+    }
+  }catch(e){ console.warn('prefs load err',e); prefs.lang='ru'; }
+  if(!prefs.lang) prefs.lang = 'ru';
+  currentLang = prefs.lang;
 }
-function load() {
-  const raw = localStorage.getItem('berkutGarage_v2');
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw);
-      state = deepMerge(JSON.parse(JSON.stringify(DEFAULT_STATE)), parsed);
-    } catch(e) { console.warn('Load error', e); }
+function savePrefs(){
+  try{ localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }catch(e){}
+}
+
+/* ---------- GAME SAVE ---------- */
+function saveGame(){
+  try{
+    // Rotate backup
+    const prev = localStorage.getItem(SAVE_KEY);
+    if(prev){ localStorage.setItem(BACKUP_KEY, prev); }
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  }catch(e){ console.warn('save err', e); }
+}
+
+function validateSave(s){
+  if(!s || typeof s !== 'object') return false;
+  if(typeof s.balance !== 'number' || s.balance < 0) return false;
+  if(!Array.isArray(s.garage)) return false;
+  return true;
+}
+
+function migrateSave(data){
+  // old save had no saveVersion
+  let v = data.saveVersion || 2;
+  // v2 -> v3
+  if(v < 3){
+    data.saveVersion = 3;
+    if(!data.stats) data.stats = JSON.parse(JSON.stringify(DEFAULT_STATE.stats));
+    if(!data.achievements) data.achievements = {};
+    if(!data.questsDate) data.questsDate = '';
+    if(!data.questsProgress) data.questsProgress = {};
+    if(!data.questsDone) data.questsDone = {};
+    if(!data.name) data.name = 'Collector';
+    if(typeof data.totalSales !== 'number') data.totalSales = 0;
+    v = 3;
+  }
+  return data;
+}
+
+function loadGame(){
+  // Try main
+  let raw = localStorage.getItem(SAVE_KEY);
+  let parsed = null;
+  if(raw){
+    try{ parsed = JSON.parse(raw); }catch(e){ parsed = null; }
+  }
+  // Migration from old keys
+  if(!parsed){
+    const old = localStorage.getItem(SAVE_KEY_OLD) || localStorage.getItem(LEGACY_KEY);
+    if(old){
+      try{ parsed = JSON.parse(old); console.log('[ABIBOK] Migrating old save'); }catch(e){}
+    }
+  }
+  if(parsed && validateSave(parsed)){
+    state = deepMerge(JSON.parse(JSON.stringify(DEFAULT_STATE)), migrateSave(parsed));
+    saveGame();
+    return;
+  }
+  // Try backup
+  const bak = localStorage.getItem(BACKUP_KEY);
+  if(bak){
+    try{
+      const b = JSON.parse(bak);
+      if(validateSave(b)){
+        console.log('[ABIBOK] Restored from backup');
+        state = deepMerge(JSON.parse(JSON.stringify(DEFAULT_STATE)), migrateSave(b));
+        showSaveWarning('Основное сохранение повреждено. Восстановлена резервная копия.');
+        saveGame();
+        return;
+      }
+    }catch(e){}
+  }
+  // Corrupted but present — warn, don't delete
+  if(raw){
+    showSaveWarning('Не удалось загрузить сохранение. Начать с нуля? Данные не удалены.');
   }
 }
-function deepMerge(base, over) {
-  for (const k in over) {
-    if (over[k] && typeof over[k] === 'object' && !Array.isArray(over[k]) && base[k]) {
+
+function deepMerge(base, over){
+  for(const k in over){
+    if(over[k] && typeof over[k]==='object' && !Array.isArray(over[k]) && base[k] && typeof base[k]==='object'){
       base[k] = deepMerge(base[k], over[k]);
     } else {
       base[k] = over[k];
@@ -673,289 +968,194 @@ function deepMerge(base, over) {
   return base;
 }
 
-/* =========================================================
-   UTILS
-   ========================================================= */
+function showSaveWarning(text){
+  const w = $('saveWarning');
+  w.textContent = text;
+  w.classList.add('show');
+  setTimeout(()=>w.classList.remove('show'), 5000);
+}
+
+/* ---------- UTILS ---------- */
+const $ = id => document.getElementById(id);
 const rnd = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 const fmt = n => Math.round(n).toLocaleString('ru-RU');
-const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 
-function randomLetters(n, set) {
-  let s = '';
-  for (let i = 0; i < n; i++) s += set[Math.floor(Math.random()*set.length)];
-  return s;
-}
-function randomDigits(n) {
-  let s = '';
-  for (let i = 0; i < n; i++) s += rnd(0,9);
-  return s;
-}
-function titleForLevel(lvl) {
-  let t = TITLES[0].name;
-  for (const x of TITLES) if (lvl >= x.min) t = x.name;
-  return t;
+function randomLetters(n, set){ let s=''; for(let i=0;i<n;i++) s+=set[rnd(0,set.length-1)]; return s; }
+function randomDigits(n){ let s=''; for(let i=0;i<n;i++) s+=rnd(0,9); return s; }
+
+/* ---------- PLATE ---------- */
+function generateMain(country){
+  const L = COUNTRIES[country].letters;
+  if(country==='RU'){ const lp=randomLetters(3,L); return lp[0]+randomDigits(3)+lp.slice(1); }
+  if(country==='UA'){ return randomLetters(2,L)+randomDigits(4)+randomLetters(2,L); }
+  if(country==='KZ'){ return randomDigits(3)+randomLetters(2,L); }
+  if(country==='BY'){ return randomDigits(4)+randomLetters(2,L); }
+  return randomDigits(3)+randomLetters(2,L);
 }
 
-/* =========================================================
-   PLATE GENERATION
-   ========================================================= */
-function generatePlateFormat(country, region, forceChance = 1) {
-  // country: 'RU'|'UA'|'KZ'|'BY'
-  const cfg = COUNTRIES[country];
-  const L = cfg.letters;
-  let main = '', regionCode = region;
-
-  if (country === 'RU') {
-    // L DDD LL
-    const lettersPart = randomLetters(3, L);
-    const digitsPart = randomDigits(3);
-    main = lettersPart[0] + digitsPart + lettersPart.slice(1);
-  } else if (country === 'UA') {
-    // LL DDDD LL
-    const l1 = randomLetters(2, L);
-    const d = randomDigits(4);
-    const l2 = randomLetters(2, L);
-    main = l1 + d + l2;
-  } else if (country === 'KZ') {
-    // DDD LL
-    main = randomDigits(3) + randomLetters(2, L);
-  } else if (country === 'BY') {
-    // DDDD LL
-    main = randomDigits(4) + randomLetters(2, L);
-  }
-  return {main, region: regionCode};
-}
-
-function analyzeCombination(main, country) {
-  // Возвращает {multiplier, tags:[], rarityBoost, statusText}
-  let mult = 1;
-  const tags = [];
-  let statusText = 'Обычный';
+function analyzeCombination(main, country){
+  let mult=1; const tags=[]; let statusText=t('common');
   const upper = main.toUpperCase();
-  // Извлекаем буквы и цифры
   const letters = upper.replace(/[0-9]/g,'');
   const digits = upper.replace(/[^0-9]/g,'');
+  let digitScore=0, digitTag=null;
 
-  // --- АНАЛИЗ ЦИФР ---
-  let digitScore = 0;
-  let digitTag = null;
-
-  if (/^0+$/.test(digits)) {
-    // 000 / 0000 — плохой номер
-    mult *= 0.4;
-    statusText = 'Обычный (нули)';
-  } else if (/^(\d)\1+$/.test(digits) && digits.length >= 3) {
-    // все одинаковые
-    const len = digits.length;
-    if (len === 3) { mult *= 8; digitTag = 'triple'; digitScore = 3; }
-    else if (len === 4) { mult *= 20; digitTag = 'quad'; digitScore = 4; }
-    else { mult *= 12; digitTag = 'repeat'; digitScore = 3; }
-  } else if (digits === '777' || digits === '999' || digits === '111' || digits === '666') {
-    mult *= 10; digitTag = 'triple'; digitScore = 3;
-  } else if (digits === '7777' || digits === '9999' || digits === '0000') {
-    mult *= 22; digitTag = 'quad'; digitScore = 4;
-  } else if (/^1234?$/.test(digits) || /^4321$/.test(digits) || /^0123$/.test(digits) || /^012$/.test(digits)) {
-    mult *= 6; digitTag = 'ladder'; digitScore = 3;
-  } else if (digits.length >= 4 && digits === digits.split('').reverse().join('')) {
-    mult *= 7; digitTag = 'palindrome'; digitScore = 3;
-  } else if (/^(\d)\1(\d)\2$/.test(digits)) {
-    // ABAB
-    mult *= 4; digitScore = 2;
-  } else if (/^(\d)\1(\d)\1$/.test(digits)) {
-    // ABAB
-    mult *= 5; digitTag = 'mirror'; digitScore = 2;
-  } else if (/^(\d)\1/.test(digits) && digits.length === 3) {
-    // начало двойное
-    mult *= 2.5; digitScore = 2;
-  } else if (/(\d)\1/.test(digits)) {
-    mult *= 1.8; digitScore = 1;
+  if(/^0+$/.test(digits)){ mult*=0.4; }
+  else if(/^(\d)\1+$/.test(digits)&&digits.length>=3){
+    if(digits.length===3){mult*=8;digitTag='triple';digitScore=3;}
+    else if(digits.length===4){mult*=20;digitTag='quad';digitScore=4;}
+    else{mult*=12;digitTag='repeat';digitScore=3;}
   }
+  else if(/^(777|999|111|666)$/.test(digits)){ mult*=10; digitTag='triple'; digitScore=3; }
+  else if(/^(7777|9999|0000)$/.test(digits)){ mult*=22; digitTag='quad'; digitScore=4; }
+  else if(/^(123|1234|4321|012|0123)$/.test(digits)){ mult*=6; digitTag='ladder'; digitScore=3; }
+  else if(digits.length>=4 && digits===digits.split('').reverse().join('')){ mult*=7; digitTag='palindrome'; digitScore=3; }
+  else if(/^(\d)\1(\d)\2$/.test(digits)){ mult*=4; digitScore=2; }
+  else if(/^(\d)\1(\d)\1$/.test(digits)){ mult*=5; digitTag='mirror'; digitScore=2; }
+  else if(/^(\d)\1/.test(digits)&&digits.length===3){ mult*=2.5; digitScore=2; }
+  else if(/(\d)\1/.test(digits)){ mult*=1.8; digitScore=1; }
 
-  // --- АНАЛИЗ БУКВ ---
-  let letterMult = 1;
-  let letterTag = null;
-  if (letters.length >= 2) {
-    if (/^(.)\1+$/.test(letters)) {
-      // все одинаковые
-      letterMult *= 4;
-      letterTag = 'triple';
-    } else if (/^(.)\1/.test(letters) || /(.)\1$/.test(letters)) {
-      letterMult *= 2;
-    } else if (letters.length >= 3 && letters[0] === letters[letters.length-1]) {
-      letterMult *= 1.7;
-    } else if (/^(.)\1?(.)\2$/.test(letters)) {
-      letterMult *= 2.2;
-    }
+  let letterMult=1, letterTag=null;
+  if(letters.length>=2){
+    if(/^(.)\1+$/.test(letters)){ letterMult*=4; letterTag='triple'; }
+    else if(/^(.)\1/.test(letters)||/(.)\1$/.test(letters)){ letterMult*=2; }
+    else if(letters.length>=3 && letters[0]===letters[letters.length-1]){ letterMult*=1.7; }
   }
-
-  // Элитные буквы (RU)
-  if (country === 'RU' && /^(AMP|EKX|AMR|KMR|OMP|MMM|XXX|KKX|AAA|BBB|CCC|XXX|KKK|MMM|OOO)$/.test(letters)) {
-    letterMult *= 15;
-    letterTag = 'vip';
+  if(country==='RU' && /^(AMP|EKX|AMR|KMR|OMP|MMM|XXX|KKX|AAA|BBB|CCC|KKK|OOO)$/.test(letters)){
+    letterMult*=15; letterTag='vip';
   }
-
   mult *= letterMult;
 
-  // --- МИРРОР (весь номер) ---
   const cleanMain = upper.replace(/\s/g,'');
-  if (cleanMain.length >= 4 && cleanMain === cleanMain.split('').reverse().join('')) {
-    mult *= 3;
-    tags.push('mirror');
+  if(cleanMain.length>=4 && cleanMain===cleanMain.split('').reverse().join('')){
+    mult*=3; if(!tags.includes('mirror')) tags.push('mirror');
   }
+  if(digitTag && !tags.includes(digitTag)) tags.push(digitTag);
+  if(letterTag && !tags.includes(letterTag)) tags.push(letterTag);
 
-  // --- СОБИРАЕМ ТЕГИ ---
-  if (digitTag && !tags.includes(digitTag)) tags.push(digitTag);
-  if (letterTag && !tags.includes(letterTag)) tags.push(letterTag);
-
-  // --- ОБЩАЯ КРАСОТА ---
-  if (digitScore >= 3 && letterMult >= 2) {
-    if (!tags.includes('vip')) tags.push('vip');
-    mult *= 1.5;
+  if(digitScore>=3 && letterMult>=2){ if(!tags.includes('vip')) tags.push('vip'); mult*=1.5; }
+  if(digits.includes('777') && digits.replace(/[^7]/g,'').length>=3){
+    if(!tags.includes('gold')) tags.push('gold');
   }
-
-  // --- ЗОЛОТОЙ НОМЕР ---
-  const goldenCheck = (digits === '777' || digits === '7777' || digits === '777') && /[A-Z]/.test(letters[0] || '');
-  if (digits.includes('777') && digits.replace(/[^7]/g,'').length >= 3) {
-    if (!tags.includes('gold')) tags.push('gold');
-  }
-
-  // --- ОПРЕДЕЛЯЕМ РЕДКОСТЬ ПО ЦЕНЕ (позже) ---
   return {mult, tags, statusText};
 }
 
-function calculatePrice(main, country, region, opts = {}) {
+function calculatePrice(main, country, region){
   const cfg = COUNTRIES[country];
   const regionData = cfg.regions[region] || {name:'—',mult:1};
   const analysis = analyzeCombination(main, country);
-
-  const basePrice = 500; // средняя база
-  let price = basePrice * analysis.mult;
-
-  // Множитель региона
+  let price = 500 * analysis.mult;
   price *= regionData.mult;
-
-  // Случайный фактор ±15% для реалистичности
-  price *= (0.85 + Math.random() * 0.3);
-
-  // Форсированный буст если игрок использовал улучшенную генерацию
-  if (opts.premiumBoost) price *= opts.premiumBoost;
-
-  // Бонус удачи
-  price *= (1 + (state.luck - 1) * 0.3);
-
-  // Бонус события
-  if (state.currentEvent) {
+  price *= (0.85 + Math.random()*0.3);
+  price *= (1 + (state.luck-1)*0.3);
+  if(state.currentEvent){
     const ev = EVENTS.find(e=>e.id===state.currentEvent);
-    if (ev && ev.mult.price) price *= ev.mult.price;
+    if(ev && ev.mult.price) price *= ev.mult.price;
   }
-
-  // Минимум
   price = Math.max(price, 50);
-
-  // Округляем красиво
-  if (price > 1000000) price = Math.round(price / 100000) * 100000;
-  else if (price > 100000) price = Math.round(price / 10000) * 10000;
-  else if (price > 10000) price = Math.round(price / 1000) * 1000;
-  else if (price > 1000) price = Math.round(price / 100) * 100;
-  else if (price > 100) price = Math.round(price / 10) * 10;
+  if(price>1000000) price = Math.round(price/100000)*100000;
+  else if(price>100000) price = Math.round(price/10000)*10000;
+  else if(price>10000) price = Math.round(price/1000)*1000;
+  else if(price>1000) price = Math.round(price/100)*100;
+  else if(price>100) price = Math.round(price/10)*10;
   else price = Math.round(price);
 
-  // Редкость
   let tier = RARITY_TIERS[0];
-  for (const t of RARITY_TIERS) if (price >= t.min) tier = t;
+  for(const t2 of RARITY_TIERS) if(price>=t2.min) tier = t2;
 
-  // Дополнительный тег за дорогой регион
   const tags = [...analysis.tags];
-  if (price >= 4000000 && !tags.includes('jackpot')) tags.push('jackpot');
-  if (regionData.mult >= 5 && !tags.includes('collection')) tags.push('collection');
+  if(price>=4000000 && !tags.includes('jackpot')) tags.push('jackpot');
+  if(regionData.mult>=5 && !tags.includes('collection')) tags.push('collection');
 
   return {
-    price: Math.round(price),
-    rarity: tier.key,
-    rarityName: tier.name,
-    tags,
-    statusText: analysis.statusText,
-    regionName: regionData.name
+    price:Math.round(price), rarity:tier.key, rarityName:rarityName(tier.key),
+    tags, statusText:analysis.statusText, regionName:regionData.name
   };
 }
 
-function createPlate(country, region, opts={}) {
-  const {main} = generatePlateFormat(country, region);
-  const info = calculatePrice(main, country, region, opts);
+function createPlate(country, region){
+  const main = generateMain(country);
+  const info = calculatePrice(main, country, region);
   return {
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2,8),
-    main,
-    region,
-    country,
-    regionName: info.regionName,
-    price: info.price,
-    rarity: info.rarity,
-    rarityName: info.rarityName,
-    tags: info.tags,
-    statusText: info.statusText,
-    favorite: false,
-    createdAt: Date.now()
+    id: Date.now().toString(36)+Math.random().toString(36).slice(2,8),
+    main, region, country, regionName:info.regionName,
+    price:info.price, rarity:info.rarity, rarityName:info.rarityName,
+    tags:info.tags, statusText:info.statusText, favorite:false, createdAt:Date.now()
   };
 }
 
-/* =========================================================
-   ECONOMY / XP / LUCK
-   ========================================================= */
-function addXP(amount) {
+/* ---------- XP / LUCK ---------- */
+function addXP(amount){
   state.xp += amount;
   const needed = state.level * 100;
-  if (state.xp >= needed) {
-    state.xp -= needed;
-    state.level++;
-    showToast(`🎖 Уровень ${state.level}! ${titleForLevel(state.level)}`);
+  if(state.xp >= needed){
+    state.xp -= needed; state.level++;
+    showToast(`🎖 ${t('levelup')} ${state.level}! ${titleForLevel(state.level)}`);
     Sound.rare();
   }
 }
-function updateLuck() {
-  let l = 1.0 + (state.luckBonus || 0);
-  if (state.currentEvent) {
+function updateLuck(){
+  let l = 1.0 + (state.luckBonus||0);
+  if(state.currentEvent){
     const ev = EVENTS.find(e=>e.id===state.currentEvent);
-    if (ev && ev.mult.luck) l += ev.mult.luck;
+    if(ev && ev.mult.luck) l += ev.mult.luck;
   }
-  state.luck = Math.round(l * 100) / 100;
+  state.luck = Math.round(l*100)/100;
 }
-function rollEvent() {
-  // 25% шанс при загрузке, длится до перезагрузки или пока не завершится
-  if (Math.random() < 0.25) {
-    const ev = pick(EVENTS);
-    state.currentEvent = ev.id;
+function rollEvent(){
+  if(Math.random()<0.25){ state.currentEvent = pick(EVENTS).id; }
+  else state.currentEvent = null;
+}
+
+/* ---------- THEME & SCALE ---------- */
+function applyTheme(){
+  document.documentElement.dataset.theme = prefs.theme;
+  const scale = prefs.scale * prefs.textSize;
+  document.documentElement.style.setProperty('--scale', scale);
+  document.documentElement.dataset.perf = prefs.perfMode ? 'low' : 'high';
+  if(prefs.perfMode){
+    document.body.style.backgroundImage = 'none';
   } else {
-    state.currentEvent = null;
+    document.body.style.backgroundImage = '';
   }
 }
 
-/* =========================================================
-   UI RENDER
-   ========================================================= */
-const $ = id => document.getElementById(id);
+/* ---------- NOTIFICATIONS / TOAST ---------- */
+let toastTimer=null;
+function showToast(msg){
+  const t1 = $('toast');
+  t1.textContent = msg;
+  t1.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t1.classList.remove('show'), 2500);
+}
 
-function render() {
+/* ---------- HISTORY ---------- */
+function addHistory(type, data){
+  state.stats.history.unshift({type, data, ts:Date.now()});
+  if(state.stats.history.length > 50) state.stats.history.length = 50;
+}
+
+/* ---------- RENDER MAIN ---------- */
+function render(){
   updateLuck();
   $('balance').textContent = fmt(state.balance);
-  $('luckVal').textContent = state.luck.toFixed(2) + 'x';
+  $('luckVal').textContent = state.luck.toFixed(2)+'x';
   $('lvlVal').textContent = state.level;
   $('genCountVal').textContent = state.stats.totalGen;
   $('garageCount').textContent = state.garage.length;
-  $('xpLabel').textContent = `XP: ${state.xp} / ${state.level * 100}`;
+  $('xpLabel').textContent = `XP: ${state.xp} / ${state.level*100}`;
   $('titleLabel').textContent = titleForLevel(state.level);
-  $('xpFill').style.width = Math.min(100, (state.xp / (state.level * 100)) * 100) + '%';
+  $('xpFill').style.width = Math.min(100,(state.xp/(state.level*100))*100)+'%';
 
-  // Event banner
-  if (state.currentEvent) {
+  if(state.currentEvent){
     const ev = EVENTS.find(e=>e.id===state.currentEvent);
-    if (ev) {
+    if(ev){
       $('eventBanner').textContent = `${ev.name} — ${ev.desc}`;
       $('eventBanner').classList.add('show');
-    } else { $('eventBanner').classList.remove('show'); }
-  } else {
-    $('eventBanner').classList.remove('show');
-  }
+    } else $('eventBanner').classList.remove('show');
+  } else $('eventBanner').classList.remove('show');
 
   renderCurrentPlate();
   renderGeneratorButtons();
@@ -963,94 +1163,87 @@ function render() {
   renderGarage();
   renderMarket();
   renderTop();
-  renderStats();
+  renderMoreContent();
+  checkAchievements();
 }
 
-function renderCurrentPlate() {
+function renderCurrentPlate(){
   const p = state.currentPlate;
   const plateEl = $('plate');
   const cc = p ? p.country : state.selectedCountry;
   const cfg = COUNTRIES[cc];
-
-  plateEl.className = 'license-plate ' + cfg.cls;
-  if (p) plateEl.classList.add('lic-' + p.rarity);
-
+  plateEl.className = 'license-plate '+cfg.cls;
+  if(p) plateEl.classList.add('lic-'+p.rarity);
   $('plateFlag').style.background = cfg.flagCss;
   $('regionText').textContent = cfg.code;
-
-  if (p) {
+  if(p){
     $('plateMain').textContent = p.main;
     $('regionCode').textContent = p.region;
-    $('statusText').textContent = p.rarityName + ' • ' + p.statusText;
-    $('statusText').className = 'status ' + p.rarity;
-    $('priceText').textContent = 'Стоимость: ' + fmt(p.price) + ' ₽';
+    $('statusText').textContent = p.rarityName+' • '+p.statusText;
+    $('statusText').className = 'status '+p.rarity;
+    $('priceText').textContent = t('balance')+': '+fmt(p.price)+' ₽';
     const tagsEl = $('extraTags');
-    if (p.tags.length) {
-      tagsEl.textContent = p.tags.map(t => (SPECIAL_TAGS[t]?.icon||'') + ' ' + (SPECIAL_TAGS[t]?.name||t)).join(' • ');
-    } else tagsEl.textContent = '';
+    tagsEl.textContent = p.tags.length ? p.tags.map(k=>(SPECIAL_TAGS[k]?.icon||'')+' '+(SPECIAL_TAGS[k]?.name||k)).join(' • ') : '';
   } else {
-    $('plateMain').textContent = cc === 'RU' ? 'A000AA' : cc === 'UA' ? 'AA0000AA' : cc === 'KZ' ? '000AA' : '0000AA';
+    $('plateMain').textContent = cc==='RU'?'A000AA':cc==='UA'?'AA0000AA':cc==='KZ'?'000AA':'0000AA';
     $('regionCode').textContent = state.selectedRegion;
-    $('statusText').textContent = 'Выберите страну и регион';
+    $('statusText').textContent = t('pick_hint');
     $('statusText').className = 'status common';
-    $('priceText').textContent = 'Ожидание генерации';
+    $('priceText').textContent = t('wait_gen');
     $('extraTags').textContent = '';
   }
 }
 
-function renderGeneratorButtons() {
-  const costBasic = 200, costPrem = 500, costVip = 1500;
-  $('btnGenerate').disabled = state.balance < costBasic;
-  $('btnGenerate').textContent = state.balance < costBasic ? 'Недостаточно средств' : `🎰 Сгенерировать (${fmt(costBasic)} ₽)`;
-  $('btnPremium').disabled = state.balance < costPrem;
-  $('btnVip').disabled = state.balance < costVip;
+function renderGeneratorButtons(){
+  const basic=200, prem=500, vip=1500;
+  $('btnGenerate').disabled = state.balance<basic;
+  $('btnGenerate').textContent = state.balance<basic ? t('notenough') : `🎰 ${t('tab_gen')} (${fmt(basic)} ₽)`;
+  $('btnPremium').disabled = state.balance<prem;
+  $('btnVip').disabled = state.balance<vip;
 }
 
-function renderDailyBtn() {
-  const now = Date.now();
-  const dayMs = 24*60*60*1000;
-  const canClaim = (now - state.lastDaily) >= dayMs;
+function renderDailyBtn(){
+  const now = Date.now(), dayMs=86400000;
+  const canClaim = (now-state.lastDaily)>=dayMs;
   $('btnDaily').disabled = !canClaim;
-  if (canClaim) $('btnDaily').textContent = `🎁 Ежедневный бонус (Серия: ${state.dailyStreak})`;
+  if(canClaim) $('btnDaily').textContent = `🎁 ${t('claim')} (${state.dailyStreak})`;
   else {
-    const left = dayMs - (now - state.lastDaily);
+    const left = dayMs-(now-state.lastDaily);
     const h = Math.floor(left/3600000), m = Math.floor((left%3600000)/60000);
-    $('btnDaily').textContent = `⏳ Бонус через ${h}ч ${m}м`;
+    $('btnDaily').textContent = `⏳ ${h}ч ${m}м`;
   }
 }
 
-/* =========================================================
-   GARAGE RENDER
-   ========================================================= */
-function renderGarage() {
-  const list = $('garageList');
-  const q = ($('searchInput').value || '').toUpperCase().trim();
+/* ---------- GARAGE ---------- */
+function renderGarage(){
+  const list = $('garageList'); if(!list) return;
+  const q = ($('searchInput').value||'').toUpperCase().trim();
   const sort = $('sortSelect').value;
+  const fc = $('filterCountry').value;
+  const fr = $('filterRarity').value;
+  const ff = $('filterFav').value;
 
   let arr = [...state.garage];
-  if (q) arr = arr.filter(p => p.main.toUpperCase().includes(q) || p.region.includes(q) || p.regionName.toUpperCase().includes(q));
+  if(q) arr = arr.filter(p=>p.main.toUpperCase().includes(q)||p.region.includes(q)||p.regionName.toUpperCase().includes(q)||COUNTRIES[p.country].name.toUpperCase().includes(q));
+  if(fc) arr = arr.filter(p=>p.country===fc);
+  if(fr) arr = arr.filter(p=>p.rarity===fr);
+  if(ff==='1') arr = arr.filter(p=>p.favorite);
 
-  const tierIndex = key => RARITY_TIERS.findIndex(t=>t.key===key);
-  switch(sort) {
+  const tierIdx = k => RARITY_TIERS.findIndex(x=>x.key===k);
+  switch(sort){
     case 'price-desc': arr.sort((a,b)=>b.price-a.price); break;
-    case 'price-asc':  arr.sort((a,b)=>a.price-b.price); break;
-    case 'rarity-desc':arr.sort((a,b)=>tierIndex(b.rarity)-tierIndex(a.rarity)); break;
-    case 'rarity-asc': arr.sort((a,b)=>tierIndex(a.rarity)-tierIndex(b.rarity)); break;
-    case 'country':    arr.sort((a,b)=>a.country.localeCompare(b.country) || b.price-a.price); break;
-    case 'region':     arr.sort((a,b)=>a.region.localeCompare(b.region) || b.price-a.price); break;
-    case 'new':        arr.sort((a,b)=>b.createdAt-a.createdAt); break;
+    case 'price-asc': arr.sort((a,b)=>a.price-b.price); break;
+    case 'rarity-desc': arr.sort((a,b)=>tierIdx(b.rarity)-tierIdx(a.rarity)); break;
+    case 'rarity-asc': arr.sort((a,b)=>tierIdx(a.rarity)-tierIdx(b.rarity)); break;
+    case 'country': arr.sort((a,b)=>a.country.localeCompare(b.country)||b.price-a.price); break;
+    case 'region': arr.sort((a,b)=>a.region.localeCompare(b.region)||b.price-a.price); break;
+    case 'new': arr.sort((a,b)=>b.createdAt-a.createdAt); break;
   }
-
-  if (!arr.length) {
-    list.innerHTML = '<div class="empty-state">Гараж пуст.<br>Сгенерируйте номера!</div>';
-    return;
-  }
-
-  list.innerHTML = arr.map(p => {
+  if(!arr.length){ list.innerHTML = `<div class="empty-state">${t('tab_garage')} — пусто</div>`; return; }
+  list.innerHTML = arr.map(p=>{
     const flag = COUNTRIES[p.country].flag;
-    const tierColor = RARITY_TIERS.find(t=>t.key===p.rarity)?.color || '#aaa';
-    return `
-    <div class="item pl-${p.rarity} ${p.favorite?'fav':''}">
+    const tierColor = RARITY_TIERS.find(x=>x.key===p.rarity)?.color||'#aaa';
+    return `<div class="item pl-${p.rarity} ${p.favorite?'fav':''}">
       <div class="item-info">
         <div class="item-plate">${p.main} <span style="font-size:11px;color:#aaa;">${p.region}</span></div>
         <div class="item-sub">${flag} ${COUNTRIES[p.country].name} • ${p.regionName}</div>
@@ -1060,59 +1253,46 @@ function renderGarage() {
       <div class="item-actions">
         <button class="item-btn btn-fav-sm" onclick="toggleFav('${p.id}')">${p.favorite?'⭐':'☆'}</button>
         <button class="item-btn btn-info-sm" onclick="showPlateInfo('${p.id}')">ℹ️</button>
-        <button class="item-btn btn-sell-sm" onclick="sellFromGarage('${p.id}')">💸 Продать</button>
+        <button class="item-btn btn-sell-sm" onclick="sellFromGarage('${p.id}')">${t('confirm_sell')}</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function toggleFav(id) {
-  const p = state.garage.find(x=>x.id===id);
-  if (!p) return;
+function toggleFav(id){
+  const p = state.garage.find(x=>x.id===id); if(!p) return;
   p.favorite = !p.favorite;
-  Sound.buy();
-  save(); renderGarage();
+  Sound.buy(); saveGame(); renderGarage();
 }
-
-function showPlateInfo(id) {
-  const p = state.garage.find(x=>x.id===id);
-  if (!p) return;
-  const tagsStr = p.tags.length ? p.tags.map(t=>(SPECIAL_TAGS[t]?.icon||'')+' '+(SPECIAL_TAGS[t]?.name||t)).join('<br>') : '—';
-  const tierColor = RARITY_TIERS.find(t=>t.key===p.rarity)?.color || '#aaa';
+function showPlateInfo(id){
+  const p = state.garage.find(x=>x.id===id); if(!p) return;
+  const tagsStr = p.tags.length ? p.tags.map(k=>(SPECIAL_TAGS[k]?.icon||'')+' '+(SPECIAL_TAGS[k]?.name||k)).join('<br>') : '—';
+  const tierColor = RARITY_TIERS.find(x=>x.key===p.rarity)?.color||'#aaa';
   $('modalBox').innerHTML = `
     <h3>${p.main} ${p.region}</h3>
     <p><b>${COUNTRIES[p.country].flag} ${COUNTRIES[p.country].name}</b><br>${p.regionName}</p>
     <p style="color:${tierColor};font-weight:900;font-size:15px;">${p.rarityName}</p>
     <p style="font-size:12px;">${p.statusText}</p>
-    <p><b>Особые:</b><br>${tagsStr}</p>
+    <p><b>${tagsStr}</b></p>
     <p style="font-size:18px;color:var(--success);font-weight:900;">${fmt(p.price)} ₽</p>
-    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">Закрыть</button></div>`;
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">${t('close')}</button></div>`;
   $('modal').classList.add('show');
 }
-function closeModal() { $('modal').classList.remove('show'); }
+function closeModal(){ $('modal').classList.remove('show'); }
 
-/* =========================================================
-   MARKET RENDER
-   ========================================================= */
-let marketFilter = 'popular';
-function renderMarket() {
-  const list = $('marketList');
-  if (!list) return;
-  // Синтетический рынок из чужих номеров
-  if (state.market.length < 20) regenerateMarket();
+/* ---------- MARKET ---------- */
+function renderMarket(){
+  const list = $('marketList'); if(!list) return;
+  if(state.market.length<20) regenerateMarket();
   let arr = [...state.market];
-
-  if (marketFilter === 'popular') arr.sort((a,b)=>(b.purchases||0)-(a.purchases||0));
-  else if (marketFilter === 'pricey') arr.sort((a,b)=>b.price-a.price);
-  else if (marketFilter === 'new') arr.sort((a,b)=>b.createdAt-a.createdAt);
-
-  arr = arr.slice(0, 20);
-
+  if(marketFilter==='popular') arr.sort((a,b)=>(b.purchases||0)-(a.purchases||0));
+  else if(marketFilter==='pricey') arr.sort((a,b)=>b.price-a.price);
+  else if(marketFilter==='new') arr.sort((a,b)=>b.createdAt-a.createdAt);
+  arr = arr.slice(0,20);
   list.innerHTML = arr.map(p=>{
     const flag = COUNTRIES[p.country].flag;
-    const tierColor = RARITY_TIERS.find(t=>t.key===p.rarity)?.color || '#aaa';
-    return `
-    <div class="item pl-${p.rarity}">
+    const tierColor = RARITY_TIERS.find(x=>x.key===p.rarity)?.color||'#aaa';
+    return `<div class="item pl-${p.rarity}">
       <div class="item-info">
         <div class="item-plate">${p.main} <span style="font-size:11px;color:#aaa;">${p.region}</span></div>
         <div class="item-sub">${flag} ${p.regionName}</div>
@@ -1120,536 +1300,42 @@ function renderMarket() {
         <div class="item-price">${fmt(p.price)} ₽</div>
       </div>
       <div class="item-actions">
-        <button class="item-btn btn-sell-sm" onclick="buyFromMarket('${p.id}')">Купить</button>
+        <button class="item-btn btn-sell-sm" onclick="buyFromMarket('${p.id}')">Buy</button>
       </div>
     </div>`;
   }).join('');
 }
-function regenerateMarket() {
-  const countries = Object.keys(COUNTRIES);
-  const arr = [];
-  for (let i = 0; i < 30; i++) {
-    const c = pick(countries);
-    const regs = Object.keys(COUNTRIES[c].regions);
-    const r = pick(regs);
-    const p = createPlate(c, r);
-    p.purchases = rnd(0, 200);
+function regenerateMarket(){
+  const arr=[];
+  for(let i=0;i<30;i++){
+    const c = pick(Object.keys(COUNTRIES));
+    const r = pick(Object.keys(COUNTRIES[c].regions));
+    const p = createPlate(c,r); p.purchases = rnd(0,200);
     arr.push(p);
   }
   state.market = arr;
 }
-function buyFromMarket(id) {
-  const p = state.market.find(x=>x.id===id);
-  if (!p) return;
-  if (state.balance < p.price) { Sound.error(); showToast('❌ Недостаточно средств'); return; }
+function buyFromMarket(id){
+  const p = state.market.find(x=>x.id===id); if(!p) return;
+  if(state.balance<p.price){ Sound.error(); showToast('❌ '+t('notenough')); return; }
   state.balance -= p.price;
   state.stats.totalSpent += p.price;
-  p.favorite = false;
-  p.createdAt = Date.now();
-  state.garage.push({...p, id: 'b'+Date.now()+Math.random().toString(36).slice(2,6)});
-  Sound.buy();
-  showToast(`✅ Куплено: ${p.main} ${p.region}`);
-  save(); render();
+  p.favorite = false; p.createdAt = Date.now();
+  state.garage.push({...p, id:'b'+Date.now()+Math.random().toString(36).slice(2,6)});
+  addHistory('buy',{main:p.main,region:p.region,price:p.price});
+  Sound.buy(); showToast(`✅ ${p.main} ${p.region}`);
+  saveGame(); render();
 }
 
-/* =========================================================
-   TOP RENDER
-   ========================================================= */
-function renderTop() {
-  const list = $('topList');
-  if (!list) return;
-  const arr = [...state.garage].sort((a,b)=>b.price-a.price).slice(0, 10);
-  if (!arr.length) { list.innerHTML = '<div class="empty-state">Пока пусто. Сгенерируйте номера!</div>'; return; }
+/* ---------- TOP ---------- */
+function renderTop(){
+  const list = $('topList'); if(!list) return;
+  const arr = [...state.garage].sort((a,b)=>b.price-a.price).slice(0,10);
+  if(!arr.length){ list.innerHTML = `<div class="empty-state">—</div>`; return; }
   list.innerHTML = arr.map((p,i)=>{
     const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
-    const rankCls = i<3?`r${i+1}`:'';
-    const flag = COUNTRIES[p.country].flag;
-    return `
-    <div class="top-item">
-      <div class="top-rank ${rankCls}">${medal}</div>
+    const rk = i<3?`r${i+1}`:'';
+    return `<div class="top-item">
+      <div class="top-rank ${rk}">${medal}</div>
       <div class="item-info">
-        <div class="item-plate">${p.main} <span style="font-size:11px;color:#aaa;">${p.region}</span></div>
-        <div class="item-sub">${flag} ${p.regionName} • ${p.rarityName}</div>
-      </div>
-      <div class="item-price">${fmt(p.price)} ₽</div>
-    </div>`;
-  }).join('');
-}
-
-/* =========================================================
-   STATS RENDER
-   ========================================================= */
-function renderStats() {
-  const g = $('statsGrid');
-  if (!g) return;
-  const s = state.stats;
-  const highest = s.highest;
-  const rarest = s.rarest;
-  const avgPrice = state.garage.length ? Math.round(state.garage.reduce((a,p)=>a+p.price,0)/state.garage.length) : 0;
-
-  // Любимая страна/регион
-  let favCountry = '—', favRegion = '—';
-  const cc = {}, rc = {};
-  state.garage.forEach(p=>{ cc[p.country]=(cc[p.country]||0)+1; rc[p.region]=(rc[p.region]||0)+1; });
-  let maxC = 0; for (const k in cc) if (cc[k]>maxC) { maxC=cc[k]; favCountry = COUNTRIES[k].flag+' '+COUNTRIES[k].name; }
-  let maxR = 0; for (const k in rc) if (rc[k]>maxR) { maxR=rc[k]; favRegion = k; }
-
-  const cells = [
-    ['Баланс', fmt(state.balance)+' ₽'],
-    ['Всего генераций', s.totalGen],
-    ['Всего номеров', state.garage.length],
-    ['Продано', s.totalSold],
-    ['Общая сумма продаж', fmt(s.totalEarned)+' ₽'],
-    ['Самый дорогой', highest ? `${highest.main} ${highest.region}` : '—'],
-    ['Цена рекорда', highest ? fmt(highest.price)+' ₽' : '—'],
-    ['Самая редкая', rarest ? rarest.rarityName : '—'],
-    ['Любимая страна', favCountry],
-    ['Любимый регион', favRegion],
-    ['Средняя стоимость', fmt(avgPrice)+' ₽'],
-    ['Макс. продажа', fmt(s.maxSale)+' ₽']
-  ];
-  g.innerHTML = cells.map(([l,v])=>`
-    <div class="stat-card"><div class="sl">${l}</div><div class="sv">${v}</div></div>`).join('');
-
-  // Achievements
-  const al = $('achList');
-  al.innerHTML = ACHIEVEMENTS.map(a=>{
-    const unlocked = state.achievements[a.id] || a.check(state);
-    if (unlocked && !state.achievements[a.id]) state.achievements[a.id] = true;
-    return `
-      <div class="ach-item ${unlocked?'unlocked':''}">
-        <div class="ach-icon">${a.icon}</div>
-        <div class="ach-info">
-          <div class="ach-name">${a.name}</div>
-          <div class="ach-desc">${a.desc}</div>
-        </div>
-      </div>`;
-  }).join('');
-
-  // Volume
-  $('volSlider').value = Math.round(Sound.volume*100);
-  $('volLabel').textContent = Math.round(Sound.volume*100)+'%';
-}
-
-/* =========================================================
-   TOAST
-   ========================================================= */
-let toastTimer = null;
-function showToast(msg) {
-  const t = $('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
-}
-
-/* =========================================================
-   GENERATION FLOW
-   ========================================================= */
-let generating = false;
-function startGeneration(kind = 'basic') {
-  if (generating) return;
-  const costs = {basic:200, premium:500, vip:1500};
-  const cost = costs[kind];
-  if (state.balance < cost) { Sound.error(); showToast('❌ Недостаточно средств'); return; }
-
-  generating = true;
-  state.balance -= cost;
-  state.stats.totalSpent += cost;
-  addXP(5);
-  save();
-
-  Sound.init();
-  Sound.spin();
-
-  // Show overlay
-  const overlay = $('genOverlay');
-  overlay.classList.add('show');
-  const stages = ['Страна...','Регион...','Цифры...','Буквы...','Проверка редкости...'];
-  let si = 0;
-  $('genStage').textContent = stages[0];
-  const stageTimer = setInterval(()=>{
-    si++;
-    if (si < stages.length) $('genStage').textContent = stages[si];
-  }, 300);
-
-  // Generate plate — но с шансом буста для premium/vip
-  const country = state.selectedCountry;
-  const region = state.selectedRegion;
-  const boosts = {basic:0, premium:0.15, vip:0.45};
-  const boost = boosts[kind];
-
-  // Иногда генерим номер с ДРУГОЙ страны при premium/vip (реалистичнее)
-  let genCountry = country;
-  if (Math.random() < boost && Math.random() < 0.4) {
-    const all = Object.keys(COUNTRIES).filter(c=>c!==country);
-    genCountry = pick(all);
-  }
-  const regs = Object.keys(COUNTRIES[genCountry].regions);
-  let genRegion = genCountry === country ? region : pick(regs);
-
-  // Несколько попыток с бустом
-  let plate = null;
-  const attempts = kind === 'basic' ? 1 : kind === 'premium' ? 3 : 6;
-  for (let i = 0; i < attempts; i++) {
-    const attempt = createPlate(genCountry, genRegion);
-    if (!plate || attempt.price > plate.price) plate = attempt;
-  }
-  // Небольшой буст цены
-  if (boost > 0) plate.price = Math.round(plate.price * (1 + boost * 0.5));
-
-  // Переопределим редкость после буста
-  let tier = RARITY_TIERS[0];
-  for (const t of RARITY_TIERS) if (plate.price >= t.min) tier = t;
-  plate.rarity = tier.key; plate.rarityName = tier.name;
-
-  // Финальный вердикт после задержки
-  setTimeout(()=>{
-    clearInterval(stageTimer);
-    overlay.classList.remove('show');
-    Sound.stop();
-
-    // Записываем в state
-    state.currentPlate = plate;
-    state.stats.totalGen++;
-    state.stats.rarityCount[plate.rarity] = (state.stats.rarityCount[plate.rarity]||0) + 1;
-    state.stats.countryCount[plate.country] = (state.stats.countryCount[plate.country]||0)+1;
-    state.stats.regionCount[plate.region] = (state.stats.regionCount[plate.region]||0)+1;
-
-    if (!state.stats.highest || plate.price > state.stats.highest.price) state.stats.highest = {...plate};
-    const tierIdx = k => RARITY_TIERS.findIndex(t=>t.key===k);
-    if (!state.stats.rarest || tierIdx(plate.rarity) > tierIdx(state.stats.rarest.rarity)) state.stats.rarest = {...plate};
-
-    state.stats.history.unshift({main: plate.main, region: plate.region, price: plate.price, rarity: plate.rarity, ts: Date.now()});
-    if (state.stats.history.length > 20) state.stats.history.length = 20;
-
-    // Автоматически в гараж
-    plate.favorite = false;
-    state.garage.push(plate);
-
-    // Событие / звук
-    handleRarityReaction(plate);
-
-    save(); render();
-    generating = false;
-  }, 1600);
-}
-
-function handleRarityReaction(plate) {
-  const tier = plate.rarity;
-  if (tier === 'unique') {
-    Sound.jackpot();
-    openJackpot(plate);
-  } else if (tier === 'legendary') {
-    Sound.legend();
-    showToast(`🌟 ЛЕГЕНДАРНЫЙ! ${plate.main} ${plate.region}`);
-  } else if (tier === 'epic' || tier === 'veryrare') {
-    Sound.epic();
-    showToast(`💎 ${plate.rarityName}! ${plate.main} ${plate.region}`);
-  } else if (tier === 'rare') {
-    Sound.rare();
-    showToast(`⭐ ${plate.rarityName}! ${plate.main} ${plate.region}`);
-  } else {
-    Sound.stop();
-    showToast(`✅ ${plate.main} ${plate.region} — ${fmt(plate.price)} ₽`);
-  }
-}
-
-/* =========================================================
-   JACKPOT
-   ========================================================= */
-function openJackpot(plate) {
-  const jp = $('jackpot');
-  $('jackpotTitle').textContent = 'УНИКАЛЬНЫЙ НОМЕР';
-  $('jackpotRarity').textContent = plate.rarityName + ' • ' + plate.statusText;
-  $('jackpotPrice').textContent = fmt(plate.price) + ' ₽';
-  const cfg = COUNTRIES[plate.country];
-  $('jackpotPlate').innerHTML = `
-    <div class="license-plate ${cfg.cls} lic-${plate.rarity}">
-      <div class="plate-main">${plate.main}</div>
-      <div class="plate-region">
-        <div class="region-code">${plate.region}</div>
-        <div class="region-text">${cfg.code}</div>
-      </div>
-    </div>`;
-  // Rays
-  const rays = $('jackpotRays');
-  rays.innerHTML = '';
-  for (let i = 0; i < 20; i++) {
-    const r = document.createElement('div');
-    r.className = 'ray';
-    r.style.transform = `rotate(${i*18}deg)`;
-    r.style.animationDelay = `${i*0.1}s`;
-    rays.appendChild(r);
-  }
-  jp.classList.add('show');
-  // Confetti
-  spawnConfetti();
-}
-function closeJackpot() {
-  $('jackpot').classList.remove('show');
-}
-function spawnConfetti() {
-  for (let i = 0; i < 60; i++) {
-    setTimeout(()=>{
-      const c = document.createElement('div');
-      c.className = 'confetti';
-      c.style.left = Math.random()*100 + 'vw';
-      c.style.top = '-20px';
-      c.style.background = pick(['#d4af37','#e74c3c','#3498db','#2ecc71','#9b59b6','#ff4fa3']);
-      c.style.animationDuration = (2 + Math.random()*2) + 's';
-      document.body.appendChild(c);
-      setTimeout(()=>c.remove(), 5000);
-    }, i * 40);
-  }
-}
-
-/* =========================================================
-   SELL
-   ========================================================= */
-function sellFromGarage(id) {
-  const idx = state.garage.findIndex(p=>p.id===id);
-  if (idx === -1) return;
-  const p = state.garage[idx];
-  if (p.favorite) { Sound.error(); showToast('⭐ Сначала снимите с избранного'); return; }
-
-  // Доп. подтверждение для дорогих
-  const needConfirm = p.price >= 500000;
-  if (needConfirm) {
-    $('modalBox').innerHTML = `
-      <h3>Продать редкий номер?</h3>
-      <p><b>${p.main} ${p.region}</b><br>${p.rarityName}</p>
-      <p style="color:var(--success);font-size:18px;font-weight:900;">${fmt(p.price)} ₽</p>
-      <p style="color:var(--danger);font-size:11px;">Это очень дорогой номер. Точно продать?</p>
-      <div class="modal-actions">
-        <button class="btn-cancel" onclick="closeModal()">Отмена</button>
-        <button class="btn-confirm" onclick="confirmSell('${id}')">Продать</button>
-      </div>`;
-    $('modal').classList.add('show');
-    return;
-  }
-  confirmSell(id);
-}
-function confirmSell(id) {
-  const idx = state.garage.findIndex(p=>p.id===id);
-  if (idx === -1) return;
-  const p = state.garage[idx];
-  state.balance += p.price;
-  state.stats.totalEarned += p.price;
-  state.stats.totalSold++;
-  if (p.price > state.stats.maxSale) state.stats.maxSale = p.price;
-  state.garage.splice(idx, 1);
-  addXP(Math.max(1, Math.floor(p.price/1000)));
-  Sound.sell();
-  showToast(`💸 Продано ${p.main} ${p.region} за ${fmt(p.price)} ₽`);
-  closeModal();
-  save(); render();
-}
-function sellAll() {
-  const sellable = state.garage.filter(p=>!p.favorite);
-  if (!sellable.length) { showToast('Нет номеров для продажи'); return; }
-  const total = sellable.reduce((a,p)=>a+p.price,0);
-  $('modalBox').innerHTML = `
-    <h3>Продать все номера?</h3>
-    <p>Кроме избранных. Всего: <b>${sellable.length}</b></p>
-    <p style="color:var(--success);font-size:20px;font-weight:900;">${fmt(total)} ₽</p>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">Отмена</button>
-      <button class="btn-confirm" onclick="confirmSellAll()">Продать всё</button>
-    </div>`;
-  $('modal').classList.add('show');
-}
-function confirmSellAll() {
-  const sellable = state.garage.filter(p=>!p.favorite);
-  let total = 0;
-  sellable.forEach(p=>{
-    total += p.price;
-    state.stats.totalSold++;
-    if (p.price > state.stats.maxSale) state.stats.maxSale = p.price;
-    addXP(Math.max(1, Math.floor(p.price/1000)));
-  });
-  state.balance += total;
-  state.stats.totalEarned += total;
-  state.garage = state.garage.filter(p=>p.favorite);
-  Sound.sell();
-  showToast(`💸 Продано ${sellable.length} номеров за ${fmt(total)} ₽`);
-  closeModal();
-  save(); render();
-}
-
-/* =========================================================
-   DAILY BONUS
-   ========================================================= */
-function claimDaily() {
-  const now = Date.now();
-  const dayMs = 24*60*60*1000;
-  if (now - state.lastDaily < dayMs) return;
-
-  // Проверяем, продолжаем ли серию (если в течение 48 часов)
-  if (state.lastDaily && now - state.lastDaily < dayMs * 2) state.dailyStreak++;
-  else state.dailyStreak = 1;
-  state.lastDaily = now;
-
-  const baseMoney = 5000;
-  const reward = baseMoney * Math.min(5, state.dailyStreak);
-  state.balance += reward;
-  state.stats.totalEarned += reward;
-  state.luckBonus = Math.min(1.5, (state.luckBonus||0) + 0.2);
-  updateLuck();
-
-  // 10% шанс на редкий номер
-  let bonusPlate = null;
-  if (Math.random() < 0.1) {
-    const c = pick(Object.keys(COUNTRIES));
-    const r = pick(Object.keys(COUNTRIES[c].regions));
-    let best = null;
-    for (let i = 0; i < 5; i++) {
-      const attempt = createPlate(c, r);
-      if (!best || attempt.price > best.price) best = attempt;
-    }
-    best.favorite = false;
-    state.garage.push(best);
-    bonusPlate = best;
-  }
-
-  Sound.legend();
-  let msg = `🎁 +${fmt(reward)} ₽`;
-  if (state.luckBonus) msg += ` • Удача +0.2x`;
-  if (bonusPlate) msg += ` • 🎁 ${bonusPlate.main} ${bonusPlate.region}`;
-  showToast(msg);
-
-  // Показать модалку с дневной серией
-  $('modalBox').innerHTML = `
-    <h3>🎁 Ежедневный бонус</h3>
-    <p>Серия входов: <b style="color:var(--accent)">${state.dailyStreak} 🔥</b></p>
-    <p style="color:var(--success);font-size:20px;font-weight:900;">+${fmt(reward)} ₽</p>
-    <p>+0.2x удачи (макс 1.5x)</p>
-    ${bonusPlate ? `<p style="color:var(--accent);font-weight:900;">🎁 Бонус: ${bonusPlate.main} ${bonusPlate.region} (${fmt(bonusPlate.price)} ₽)</p>` : ''}
-    <div class="modal-actions"><button class="btn-confirm" onclick="closeModal()">Забрать</button></div>`;
-  $('modal').classList.add('show');
-
-  save(); render();
-}
-
-/* =========================================================
-   INIT & EVENT LISTENERS
-   ========================================================= */
-function initSelectors() {
-  const cSel = $('countrySelect');
-  cSel.innerHTML = Object.keys(COUNTRIES).map(c=>
-    `<option value="${c}">${COUNTRIES[c].flag} ${COUNTRIES[c].name}</option>`).join('');
-  cSel.value = state.selectedCountry;
-  cSel.addEventListener('change', ()=>{
-    state.selectedCountry = cSel.value;
-    state.selectedRegion = Object.keys(COUNTRIES[cSel.value].regions)[0];
-    updateRegionSelect();
-    state.currentPlate = null;
-    save(); render();
-  });
-
-  updateRegionSelect();
-
-  function updateRegionSelect() {
-    const rSel = $('regionSelect');
-    const regions = COUNTRIES[state.selectedCountry].regions;
-    rSel.innerHTML = Object.entries(regions).map(([k,v])=>
-      `<option value="${k}">${v.name} (${k})</option>`).join('');
-    rSel.value = state.selectedRegion;
-  }
-  window.updateRegionSelect = updateRegionSelect;
-  $('regionSelect').addEventListener('change', e=>{
-    state.selectedRegion = e.target.value;
-    state.currentPlate = null;
-    save(); render();
-  });
-}
-
-function initTabs() {
-  document.querySelectorAll('.tab').forEach(t=>{
-    if (t.dataset.tab) {
-      t.addEventListener('click', ()=>{
-        document.querySelectorAll('.tab').forEach(x=>{ if (x.dataset.tab) x.classList.toggle('active', x===t); });
-        ['generator','garage','market','top','stats'].forEach(v=>{
-          const el = $('view-'+v);
-          if (el) el.style.display = (v === t.dataset.tab) ? 'flex' : 'none';
-        });
-        if (t.dataset.tab === 'market') renderMarket();
-        if (t.dataset.tab === 'top') renderTop();
-        if (t.dataset.tab === 'stats') renderStats();
-      });
-    }
-    if (t.dataset.mkt) {
-      t.addEventListener('click', ()=>{
-        document.querySelectorAll('.tab[data-mkt]').forEach(x=>x.classList.toggle('active', x===t));
-        marketFilter = t.dataset.mkt;
-        renderMarket();
-      });
-    }
-  });
-}
-
-function initButtons() {
-  $('btnGenerate').addEventListener('click', ()=>startGeneration('basic'));
-  $('btnPremium').addEventListener('click', ()=>startGeneration('premium'));
-  $('btnVip').addEventListener('click', ()=>startGeneration('vip'));
-  $('btnDaily').addEventListener('click', claimDaily);
-  $('btnSellAll').addEventListener('click', sellAll);
-  $('searchInput').addEventListener('input', renderGarage);
-  $('sortSelect').addEventListener('change', renderGarage);
-  $('volSlider').addEventListener('input', e=>{
-    Sound.volume = e.target.value / 100;
-    $('volLabel').textContent = e.target.value + '%';
-  });
-  // First user interaction init sound ctx
-  document.body.addEventListener('click', ()=>Sound.init(), {once:true});
-}
-
-function checkAchievements() {
-  let newAch = false;
-  ACHIEVEMENTS.forEach(a=>{
-    if (!state.achievements[a.id] && a.check(state)) {
-      state.achievements[a.id] = true;
-      newAch = true;
-      showToast(`🏅 Достижение: ${a.name}`);
-    }
-  });
-  if (newAch) Sound.rare();
-}
-
-// Override render to check achievements
-const _origRender = render;
-render = function() {
-  _origRender();
-  checkAchievements();
-};
-
-function initGame() {
-  load();
-  initSelectors();
-  initTabs();
-  initButtons();
-  // Roll event at load
-  if (!state.currentEvent || Math.random() < 0.5) rollEvent();
-  // Regenerate market
-  regenerateMarket();
-  render();
-  save();
-  console.log('%c[ABIBOK] Berkut Garage v2 ready', 'color:#d4af37;font-weight:900');
-}
-
-window.addEventListener('DOMContentLoaded', initGame);
-// Ensure work also if script runs after DOMContentLoaded
-if (document.readyState !== 'loading') initGame();
-
-/* expose to window for inline onclick */
-window.toggleFav = toggleFav;
-window.showPlateInfo = showPlateInfo;
-window.closeModal = closeModal;
-window.sellFromGarage = sellFromGarage;
-window.confirmSell = confirmSell;
-window.confirmSellAll = confirmSellAll;
-window.closeJackpot = closeJackpot;
-window.buyFromMarket = buyFromMarket;
-</script>
-</body>
-</html>
+        <div class
