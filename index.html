@@ -1338,4 +1338,703 @@ function renderTop(){
     return `<div class="top-item">
       <div class="top-rank ${rk}">${medal}</div>
       <div class="item-info">
-        <div class
+        <div class="item-plate">${p.main} <span style="font-size:11px;color:#aaa;">${p.region}</span></div>
+        <div class="item-sub">${COUNTRIES[p.country].flag} ${p.regionName} • ${p.rarityName}</div>
+      </div>
+      <div class="item-price">${fmt(p.price)} ₽</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- MORE CONTENT ---------- */
+function renderMoreContent(){
+  const c = $('more-content'); if(!c) return;
+  if(moreTab==='profile') c.innerHTML = renderProfile();
+  else if(moreTab==='stats') c.innerHTML = renderStatsHTML();
+  else if(moreTab==='ach') c.innerHTML = renderAchHTML();
+  else if(moreTab==='collections') c.innerHTML = renderCollectionsHTML();
+  else if(moreTab==='history') c.innerHTML = renderHistoryHTML();
+  else if(moreTab==='quests') c.innerHTML = renderQuestsHTML();
+  else if(moreTab==='news') c.innerHTML = renderNewsHTML();
+}
+
+function renderProfile(){
+  const avatars = ['👤','🧑‍💼','👑','🎩','🕵️','🧙','🦊','🐺','🐉','🎯'];
+  const unlocked = ACHIEVEMENTS.filter(a=>state.achievements[a.id]).length;
+  return `
+    <div class="profile-header">
+      <div style="font-size:56px;">${prefs.avatar}</div>
+      <div style="font-size:16px;font-weight:900;color:var(--accent);margin-top:6px;">${state.name||'Collector'}</div>
+      <div style="font-size:12px;color:var(--text2);">${titleForLevel(state.level)} • Lv.${state.level}</div>
+      <div class="avatar-pick">
+        ${avatars.map(a=>`<span class="${prefs.avatar===a?'sel':''}" onclick="setAvatar('${a}')">${a}</span>`).join('')}
+      </div>
+    </div>
+    <div class="stats-grid" style="margin-top:6px;">
+      <div class="stat-card"><div class="sl">${t('balance')}</div><div class="sv">${fmt(state.balance)} ₽</div></div>
+      <div class="stat-card"><div class="sl">XP</div><div class="sv">${state.xp}/${state.level*100}</div></div>
+      <div class="stat-card"><div class="sl">${t('gens')}</div><div class="sv">${state.stats.totalGen}</div></div>
+      <div class="stat-card"><div class="sl">${t('tab_garage')}</div><div class="sv">${state.garage.length}</div></div>
+      <div class="stat-card"><div class="sl">${t('sold')}</div><div class="sv">${state.stats.totalSold}</div></div>
+      <div class="stat-card"><div class="sl">${t('more_ach')}</div><div class="sv">${unlocked}/${ACHIEVEMENTS.length}</div></div>
+      <div class="stat-card"><div class="sl">Top</div><div class="sv">${state.stats.highest?fmt(state.stats.highest.price)+' ₽':'—'}</div></div>
+      <div class="stat-card"><div class="sl">Rare</div><div class="sv">${state.stats.rarest?state.stats.rarest.rarityName:'—'}</div></div>
+      <div class="stat-card"><div class="sl">Earned</div><div class="sv">${fmt(state.stats.totalEarned)} ₽</div></div>
+      <div class="stat-card"><div class="sl">Max sale</div><div class="sv">${fmt(state.stats.maxSale)} ₽</div></div>
+    </div>
+    <div class="settings-section" style="margin-top:12px;">${t('settings')}</div>
+    <div class="settings-row">
+      <label>Промокод</label>
+      <input type="text" id="promoInput" placeholder="CODE" style="width:100px;">
+      <button class="btn-confirm" onclick="applyPromo()" style="padding:6px 12px;font-size:11px;">OK</button>
+    </div>
+    <div class="settings-row"><label>Сменить имя</label>
+      <button class="btn-cancel" onclick="changeName()" style="padding:6px 12px;font-size:11px;">${state.name||'Collector'}</button>
+    </div>
+  `;
+}
+
+function setAvatar(a){ prefs.avatar=a; savePrefs(); renderMoreContent(); }
+function changeName(){
+  const n = prompt('Имя:', state.name||'Collector');
+  if(n && n.trim()){ state.name = n.trim().slice(0,24); saveGame(); renderMoreContent(); }
+}
+function applyPromo(){
+  const code = ($('promoInput').value||'').toUpperCase().trim();
+  if(!code) return;
+  if(prefs.promoUsed.includes(code)){ Sound.error(); showToast('❌ Уже использован'); return; }
+  const bonus = PROMOCODES[code];
+  if(!bonus){ Sound.error(); showToast('❌ Неизвестный код'); return; }
+  if(bonus.money) state.balance += bonus.money;
+  if(bonus.xp) addXP(bonus.xp);
+  if(bonus.luck) state.luckBonus = Math.min(2.5,(state.luckBonus||0)+bonus.luck);
+  prefs.promoUsed.push(code);
+  savePrefs(); saveGame(); renderMoreContent();
+  Sound.legend();
+  showToast(`✅ Промокод активирован! +${fmt(bonus.money||0)} ₽`);
+}
+
+function renderStatsHTML(){
+  const s = state.stats;
+  const cells = [
+    [t('balance'),fmt(state.balance)+' ₽'],
+    ['Генераций',s.totalGen],
+    ['Номеров',state.garage.length],
+    [t('sold'),s.totalSold],
+    ['Earned',fmt(s.totalEarned)+' ₽'],
+    ['Spent',fmt(s.totalSpent)+' ₽'],
+    ['Top', s.highest?`${s.highest.main} ${s.highest.region}`:'—'],
+    ['Top ₽', s.highest?fmt(s.highest.price)+' ₽':'—'],
+    ['Rarest', s.rarest?s.rarest.rarityName:'—'],
+    ['Max sale', fmt(s.maxSale)+' ₽'],
+    ['Common', s.rarityCount.common],
+    ['Uncommon', s.rarityCount.uncommon],
+    ['Beautiful', s.rarityCount.beautiful],
+    ['Rare', s.rarityCount.rare],
+    ['Very rare', s.rarityCount.veryrare],
+    ['Epic', s.rarityCount.epic],
+    ['Legendary', s.rarityCount.legendary],
+    ['Unique', s.rarityCount.unique]
+  ];
+  return `<div class="stats-grid">${cells.map(([l,v])=>`<div class="stat-card"><div class="sl">${l}</div><div class="sv">${v}</div></div>`).join('')}</div>
+    <div class="vol-row" style="margin-top:12px;">
+      <span>🔊</span>
+      <input type="range" id="volSlider" min="0" max="100" value="${Math.round(Sound.volume*100)}">
+      <span id="volLabel">${Math.round(Sound.volume*100)}%</span>
+    </div>`;
+}
+
+function renderAchHTML(){
+  return ACHIEVEMENTS.map(a=>{
+    const unlocked = !!state.achievements[a.id];
+    return `<div class="ach-item ${unlocked?'unlocked':''}">
+      <div class="ach-icon">${a.icon}</div>
+      <div class="ach-info">
+        <div class="ach-name">${a.name}</div>
+        <div class="ach-desc">${a.desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCollectionsHTML(){
+  const countries = Object.keys(COUNTRIES);
+  return countries.map(c=>{
+    const cfg = COUNTRIES[c];
+    const total = Object.keys(cfg.regions).length;
+    const owned = new Set(state.garage.filter(p=>p.country===c).map(p=>p.region)).size;
+    const pct = Math.round(owned/total*100);
+    return `<div class="quest-item ${owned>=total?'done':''}">
+      <div class="quest-title">${cfg.flag} ${cfg.name}</div>
+      <div class="quest-progress">${owned}/${total} регионов (${pct}%)</div>
+      <div class="quest-bar"><div class="quest-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderHistoryHTML(){
+  if(!state.stats.history.length) return '<div class="empty-state">—</div>';
+  return state.stats.history.slice(0,30).map(h=>{
+    const d = h.data||{};
+    let title='',body='';
+    if(h.type==='buy'){ title=`🛒 ${d.main} ${d.region}`; body=`−${fmt(d.price)} ₽`; }
+    else if(h.type==='gen'){ title=`🎰 ${d.main} ${d.region}`; body=`${fmt(d.price)} ₽ • ${d.rarityName||''}`; }
+    else if(h.type==='sell'){ title=`💸 ${d.main} ${d.region}`; body=`+${fmt(d.price)} ₽`; }
+    else if(h.type==='ach'){ title=`🏅 ${d.name}`; body='Достижение'; }
+    return `<div class="news-item"><div class="news-title">${title}</div><div class="news-body">${body}</div></div>`;
+  }).join('');
+}
+
+function renderQuestsHTML(){
+  checkDailyQuests();
+  return QUESTS_DB.map(q=>{
+    const prog = state.questsProgress[q.id]||0;
+    const done = state.questsDone[q.id];
+    const pct = Math.min(100, Math.round(prog/q.target*100));
+    return `<div class="quest-item ${done?'done':''}">
+      <div class="quest-title">${q.name} ${done?'✓':''}</div>
+      <div class="quest-progress">${prog}/${q.target} • Reward: ${fmt(q.reward)} ₽ + ${q.xp} XP</div>
+      <div class="quest-bar"><div class="quest-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderNewsHTML(){
+  return NEWS_DB.map(n=>`<div class="news-item"><div class="news-title">${n.t}</div><div class="news-body">${n.b}</div></div>`).join('');
+}
+
+/* ---------- QUESTS ---------- */
+function checkDailyQuests(){
+  const today = new Date().toISOString().slice(0,10);
+  if(state.questsDate !== today){
+    state.questsDate = today;
+    state.questsProgress = {};
+    state.questsDone = {};
+  }
+}
+function progressQuest(type, amount=1){
+  checkDailyQuests();
+  QUESTS_DB.forEach(q=>{
+    if(q.type !== type) return;
+    if(state.questsDone[q.id]) return;
+    state.questsProgress[q.id] = (state.questsProgress[q.id]||0) + amount;
+    if(state.questsProgress[q.id] >= q.target){
+      state.questsDone[q.id] = true;
+      state.balance += q.reward;
+      addXP(q.xp);
+      showToast(`✓ ${q.name} — +${fmt(q.reward)} ₽`);
+      Sound.rare();
+    }
+  });
+}
+
+/* ---------- ACHIEVEMENTS ---------- */
+function checkAchievements(){
+  let newAch = false;
+  ACHIEVEMENTS.forEach(a=>{
+    if(!state.achievements[a.id] && a.check(state)){
+      state.achievements[a.id] = true;
+      newAch = true;
+      showToast(`🏅 ${t('achievement')}: ${a.name}`);
+      addHistory('ach', {name:a.name});
+    }
+  });
+  if(newAch){ Sound.rare(); saveGame(); }
+}
+
+/* ---------- GENERATION ---------- */
+let generating = false;
+function startGeneration(kind='basic'){
+  if(generating) return;
+  const costs = {basic:200, premium:500, vip:1500};
+  const cost = costs[kind];
+  if(state.balance < cost){ Sound.error(); showToast('❌ '+t('notenough')); return; }
+  generating = true;
+  state.balance -= cost;
+  state.stats.totalSpent += cost;
+  addXP(5);
+  saveGame();
+
+  Sound.init(); Sound.spin();
+  const overlay = $('genOverlay');
+  overlay.classList.add('show');
+  const stages = ['Country...','Region...','Digits...','Letters...','Rarity...'];
+  let si = 0;
+  $('genStage').textContent = stages[0];
+  const stageTimer = setInterval(()=>{ si++; if(si<stages.length) $('genStage').textContent=stages[si]; }, 300);
+
+  const country = state.selectedCountry;
+  const region = state.selectedRegion;
+  const boost = kind==='basic'?0:kind==='premium'?0.15:0.45;
+
+  let genCountry = country;
+  if(Math.random()<boost && Math.random()<0.4){
+    const all = Object.keys(COUNTRIES).filter(c=>c!==country);
+    genCountry = pick(all);
+  }
+  const genRegion = genCountry===country ? region : pick(Object.keys(COUNTRIES[genCountry].regions));
+
+  let plate = null;
+  const attempts = kind==='basic'?1:kind==='premium'?3:6;
+  for(let i=0;i<attempts;i++){
+    const a = createPlate(genCountry, genRegion);
+    if(!plate || a.price>plate.price) plate = a;
+  }
+  if(boost>0){
+    plate.price = Math.round(plate.price*(1+boost*0.5));
+    let tier = RARITY_TIERS[0];
+    for(const x of RARITY_TIERS) if(plate.price>=x.min) tier = x;
+    plate.rarity = tier.key; plate.rarityName = rarityName(tier.key);
+  }
+
+  setTimeout(()=>{
+    clearInterval(stageTimer);
+    overlay.classList.remove('show');
+    Sound.stop();
+
+    state.currentPlate = plate;
+    state.stats.totalGen++;
+    state.stats.rarityCount[plate.rarity] = (state.stats.rarityCount[plate.rarity]||0)+1;
+    state.stats.countryCount[plate.country] = (state.stats.countryCount[plate.country]||0)+1;
+    state.stats.regionCount[plate.region] = (state.stats.regionCount[plate.region]||0)+1;
+
+    if(!state.stats.highest || plate.price > state.stats.highest.price) state.stats.highest = {...plate};
+    const tierIdx = k => RARITY_TIERS.findIndex(x=>x.key===k);
+    if(!state.stats.rarest || tierIdx(plate.rarity) > tierIdx(state.stats.rarest.rarity)) state.stats.rarest = {...plate};
+
+    plate.favorite = false;
+    state.garage.push(plate);
+
+    addHistory('gen',{main:plate.main,region:plate.region,price:plate.price,rarityName:plate.rarityName});
+    progressQuest('gen', 1);
+    if(plate.country==='RU') progressQuest('ru', 1);
+    if(tierIdx(plate.rarity)>=tierIdx('rare')) progressQuest('rare', 1);
+    addXP(Math.floor(plate.price/1000));
+
+    handleRarityReaction(plate);
+    saveGame(); render();
+    generating = false;
+  }, 1600);
+}
+
+function handleRarityReaction(plate){
+  const tier = plate.rarity;
+  if(tier==='unique'){ Sound.jackpot(); openJackpot(plate); }
+  else if(tier==='legendary'){ Sound.legend(); showToast(`🌟 LEGENDARY! ${plate.main} ${plate.region}`); }
+  else if(tier==='epic'||tier==='veryrare'){ Sound.epic(); showToast(`💎 ${plate.rarityName}! ${plate.main} ${plate.region}`); }
+  else if(tier==='rare'){ Sound.rare(); showToast(`⭐ ${plate.rarityName}! ${plate.main} ${plate.region}`); }
+  else { Sound.stop(); showToast(`✅ ${plate.main} ${plate.region} — ${fmt(plate.price)} ₽`); }
+}
+
+/* ---------- JACKPOT ---------- */
+function openJackpot(plate){
+  const jp = $('jackpot');
+  $('jackpotTitle').textContent = t('jackpot_title');
+  $('jackpotRarity').textContent = plate.rarityName+' • '+plate.statusText;
+  $('jackpotPrice').textContent = fmt(plate.price)+' ₽';
+  const cfg = COUNTRIES[plate.country];
+  $('jackpotPlate').innerHTML = `<div class="license-plate ${cfg.cls} lic-${plate.rarity}">
+    <div class="plate-main">${plate.main}</div>
+    <div class="plate-region">
+      <div class="region-code">${plate.region}</div>
+      <div class="region-text">${cfg.code}</div>
+    </div></div>`;
+  const rays = $('jackpotRays'); rays.innerHTML='';
+  if(!prefs.perfMode){
+    for(let i=0;i<20;i++){
+      const r = document.createElement('div');
+      r.className='ray'; r.style.transform=`rotate(${i*18}deg)`; r.style.animationDelay=`${i*0.1}s`;
+      rays.appendChild(r);
+    }
+  }
+  jp.classList.add('show');
+  if(!prefs.perfMode) spawnConfetti();
+  Sound.vibrate(120);
+}
+function closeJackpot(){ $('jackpot').classList.remove('show'); }
+function spawnConfetti(){
+  for(let i=0;i<60;i++){
+    setTimeout(()=>{
+      const c = document.createElement('div');
+      c.className='confetti';
+      c.style.left = Math.random()*100+'vw';
+      c.style.top = '-20px';
+      c.style.background = pick(['#d4af37','#e74c3c','#3498db','#2ecc71','#9b59b6','#ff4fa3']);
+      c.style.animationDuration = (2+Math.random()*2)+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(), 5000);
+    }, i*40);
+  }
+}
+
+/* ---------- SELL ---------- */
+function sellFromGarage(id){
+  const p = state.garage.find(x=>x.id===id); if(!p) return;
+  if(p.favorite){ Sound.error(); showToast(t('favorite_warn')); return; }
+  if(p.price >= 500000){
+    $('modalBox').innerHTML = `
+      <h3>${t('sell_question')}</h3>
+      <p><b>${p.main} ${p.region}</b><br>${p.rarityName}</p>
+      <p style="color:var(--success);font-size:18px;font-weight:900;">${fmt(p.price)} ₽</p>
+      <p style="color:var(--danger);font-size:11px;">⚠ Редкий номер</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">${t('cancel')}</button>
+        <button class="btn-confirm" onclick="confirmSell('${id}')">${t('confirm_sell')}</button>
+      </div>`;
+    $('modal').classList.add('show');
+    return;
+  }
+  confirmSell(id);
+}
+function confirmSell(id){
+  const idx = state.garage.findIndex(p=>p.id===id); if(idx===-1) return;
+  const p = state.garage[idx];
+  state.balance += p.price;
+  state.stats.totalEarned += p.price;
+  state.stats.totalSold++;
+  state.totalSales = (state.totalSales||0)+1;
+  if(p.price > state.stats.maxSale) state.stats.maxSale = p.price;
+  state.garage.splice(idx,1);
+  addXP(Math.max(1, Math.floor(p.price/1000)));
+  addHistory('sell',{main:p.main,region:p.region,price:p.price});
+  progressQuest('sell', 1);
+  progressQuest('earn', p.price);
+  Sound.sell(); Sound.vibrate(20);
+  showToast(`💸 ${p.main} ${p.region} +${fmt(p.price)} ₽`);
+  closeModal(); saveGame(); render();
+}
+function sellAll(){
+  const sellable = state.garage.filter(p=>!p.favorite);
+  if(!sellable.length){ showToast('—'); return; }
+  const total = sellable.reduce((a,p)=>a+p.price,0);
+  $('modalBox').innerHTML = `
+    <h3>${t('all_sell')}</h3>
+    <p>${sellable.length} 📦</p>
+    <p style="color:var(--success);font-size:20px;font-weight:900;">${fmt(total)} ₽</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">${t('cancel')}</button>
+      <button class="btn-confirm" onclick="confirmSellAll()">${t('confirm_sell')}</button>
+    </div>`;
+  $('modal').classList.add('show');
+}
+function confirmSellAll(){
+  const sellable = state.garage.filter(p=>!p.favorite);
+  let total=0;
+  sellable.forEach(p=>{
+    total += p.price;
+    state.stats.totalSold++;
+    state.totalSales = (state.totalSales||0)+1;
+    if(p.price>state.stats.maxSale) state.stats.maxSale = p.price;
+    addXP(Math.max(1, Math.floor(p.price/1000)));
+    progressQuest('earn', p.price);
+  });
+  state.balance += total;
+  state.stats.totalEarned += total;
+  progressQuest('sell', sellable.length);
+  state.garage = state.garage.filter(p=>p.favorite);
+  Sound.sell(); showToast(`💸 ${sellable.length} → ${fmt(total)} ₽`);
+  closeModal(); saveGame(); render();
+}
+
+/* ---------- DAILY ---------- */
+function claimDaily(){
+  const now = Date.now(), dayMs=86400000;
+  if(now-state.lastDaily < dayMs) return;
+  if(state.lastDaily && now-state.lastDaily < dayMs*2) state.dailyStreak++;
+  else state.dailyStreak = 1;
+  state.lastDaily = now;
+
+  const idx = (state.dailyStreak-1) % DAILY_REWARDS.length;
+  const reward = DAILY_REWARDS[idx];
+  let rewardText = reward.label;
+
+  if(reward.type==='money'){ state.balance += reward.amount; state.stats.totalEarned += reward.amount; }
+  else if(reward.type==='xp'){ addXP(reward.amount); }
+  else if(reward.type==='luck'){ state.luckBonus = Math.min(2.5,(state.luckBonus||0)+reward.amount); }
+  else if(reward.type==='rare_gen'){
+    const c = pick(Object.keys(COUNTRIES));
+    const r = pick(Object.keys(COUNTRIES[c].regions));
+    const p = createPlate(c,r); p.favorite=false;
+    state.garage.push(p);
+    rewardText = `${p.main} ${p.region} (${fmt(p.price)} ₽)`;
+  } else if(reward.type==='big'){
+    state.balance += reward.amount; state.stats.totalEarned += reward.amount;
+    state.luckBonus = Math.min(2.5,(state.luckBonus||0)+0.5);
+  } else if(reward.type==='gen'){
+    state.balance += reward.amount*200;
+    rewardText = `${reward.amount} free gens`;
+  }
+
+  updateLuck();
+  Sound.legend(); Sound.vibrate(80);
+  $('modalBox').innerHTML = `
+    <h3>🎁 Daily</h3>
+    <p>Streak: <b style="color:var(--accent)">${state.dailyStreak} 🔥</b></p>
+    <p style="color:var(--success);font-size:18px;font-weight:900;">${rewardText}</p>
+    <div class="modal-actions"><button class="btn-confirm" onclick="closeModal()">${t('claim')}</button></div>`;
+  $('modal').classList.add('show');
+  saveGame(); render();
+}
+
+/* ---------- SETTINGS ---------- */
+function openSettings(){
+  $('modalBox').innerHTML = `
+    <h3>⚙️ ${t('settings')}</h3>
+
+    <div class="settings-section">${t('settings')}</div>
+    <div class="settings-row"><label>${t('title')} Lang</label>
+      <select id="setLang">
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="uk">🇺🇦 Українська</option>
+        <option value="kk">🇰🇿 Қазақша</option>
+        <option value="be">🇧🇾 Беларуская</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+    </div>
+    <div class="settings-row"><label>Theme</label>
+      <select id="setTheme">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="blue">Blue</option>
+        <option value="purple">Purple</option>
+        <option value="green">Green</option>
+        <option value="red">Red</option>
+      </select>
+    </div>
+    <div class="settings-row"><label>Scale</label>
+      <input type="range" id="setScale" min="80" max="130" value="${Math.round(prefs.scale*100)}">
+      <span id="scaleLbl">${Math.round(prefs.scale*100)}%</span>
+    </div>
+
+    <div class="settings-section">Sound</div>
+    <div class="settings-row"><label>Volume</label>
+      <input type="range" id="setVol" min="0" max="100" value="${Math.round(prefs.volume*100)}">
+      <span id="volLbl2">${Math.round(prefs.volume*100)}%</span>
+    </div>
+    <div class="settings-row"><label>SFX</label>
+      <div class="toggle ${prefs.sfxOn?'on':''}" onclick="togglePref('sfxOn',this)"></div>
+    </div>
+    <div class="settings-row"><label>Rare sound</label>
+      <div class="toggle ${prefs.rareSoundOn?'on':''}" onclick="togglePref('rareSoundOn',this)"></div>
+    </div>
+    <div class="settings-row"><label>Vibration</label>
+      <div class="toggle ${prefs.vibrateOn?'on':''}" onclick="togglePref('vibrateOn',this)"></div>
+    </div>
+
+    <div class="settings-section">Graphics</div>
+    <div class="settings-row"><label>Quality</label>
+      <select id="setQuality">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+    <div class="settings-row"><label>Particles</label>
+      <div class="toggle ${prefs.particles?'on':''}" onclick="togglePref('particles',this)"></div>
+    </div>
+    <div class="settings-row"><label>Perf mode</label>
+      <div class="toggle ${prefs.perfMode?'on':''}" onclick="togglePref('perfMode',this)"></div>
+    </div>
+    <div class="settings-row"><label>Rare effects</label>
+      <div class="toggle ${prefs.rareEffects?'on':''}" onclick="togglePref('rareEffects',this)"></div>
+    </div>
+
+    <div class="settings-section">UI</div>
+    <div class="settings-row"><label>Text size</label>
+      <input type="range" id="setTextSize" min="80" max="130" value="${Math.round(prefs.textSize*100)}">
+      <span id="tsLbl">${Math.round(prefs.textSize*100)}%</span>
+    </div>
+    <div class="settings-row"><label>Show hints</label>
+      <div class="toggle ${prefs.showHints?'on':''}" onclick="togglePref('showHints',this)"></div>
+    </div>
+    <div class="settings-row"><label>Compact garage</label>
+      <div class="toggle ${prefs.compactGarage?'on':''}" onclick="togglePref('compactGarage',this)"></div>
+    </div>
+
+    <div class="settings-section">About</div>
+    <div class="settings-row"><label>Berkut Garage</label><span style="font-size:11px;color:var(--text2);">v3.0.0</span></div>
+
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn-cancel" onclick="resetPrefs()">Reset prefs</button>
+      <button class="btn-confirm" onclick="closeModal()">${t('close')}</button>
+    </div>
+  `;
+  $('modal').classList.add('show');
+
+  $('setLang').value = prefs.lang;
+  $('setLang').onchange = e => { prefs.lang = e.target.value; currentLang = prefs.lang; savePrefs(); applyI18n(); renderMoreContent(); };
+  $('setTheme').value = prefs.theme;
+  $('setTheme').onchange = e => { prefs.theme = e.target.value; savePrefs(); applyTheme(); };
+  $('setScale').oninput = e => { prefs.scale = e.target.value/100; $('scaleLbl').textContent = e.target.value+'%'; savePrefs(); applyTheme(); };
+  $('setVol').oninput = e => { prefs.volume = e.target.value/100; Sound.volume = prefs.volume; $('volLbl2').textContent = e.target.value+'%'; savePrefs(); };
+  $('setQuality').value = prefs.quality;
+  $('setQuality').onchange = e => { prefs.quality = e.target.value; savePrefs(); };
+  $('setTextSize').oninput = e => { prefs.textSize = e.target.value/100; $('tsLbl').textContent = e.target.value+'%'; savePrefs(); applyTheme(); };
+}
+
+function togglePref(k, el){
+  prefs[k] = !prefs[k];
+  el.classList.toggle('on', prefs[k]);
+  if(k==='sfxOn') Sound.enabled = prefs.sfxOn;
+  if(k==='rareSoundOn') Sound.rareEnabled = prefs.rareSoundOn;
+  if(k==='vibrateOn') Sound.vibration = prefs.vibrateOn;
+  if(k==='perfMode') applyTheme();
+  savePrefs();
+}
+
+function resetPrefs(){
+  if(!confirm('Reset all preferences? (Progress will stay)')) return;
+  prefs = JSON.parse(JSON.stringify(DEFAULT_PREFS));
+  prefs.lang = 'ru';
+  currentLang = 'ru';
+  savePrefs(); applyTheme(); applyI18n(); closeModal();
+}
+
+/* ---------- SELECTORS ---------- */
+function initSelectors(){
+  const cSel = $('countrySelect');
+  cSel.innerHTML = Object.keys(COUNTRIES).map(c=>`<option value="${c}">${COUNTRIES[c].flag} ${COUNTRIES[c].name}</option>`).join('');
+  cSel.value = state.selectedCountry;
+  cSel.onchange = () => {
+    state.selectedCountry = cSel.value;
+    state.selectedRegion = Object.keys(COUNTRIES[cSel.value].regions)[0];
+    updateRegionSelect(); state.currentPlate = null;
+    saveGame(); render();
+  };
+  updateRegionSelect();
+  $('regionSelect').onchange = e => { state.selectedRegion = e.target.value; state.currentPlate = null; saveGame(); render(); };
+
+  // Garage filters
+  const fcs = $('filterCountry');
+  fcs.innerHTML = `<option value="">${t('filter_all_c')}</option>` + Object.keys(COUNTRIES).map(c=>`<option value="${c}">${COUNTRIES[c].flag} ${COUNTRIES[c].name}</option>`).join('');
+  const frs = $('filterRarity');
+  frs.innerHTML = `<option value="">${t('filter_all_r')}</option>` + RARITY_TIERS.map(r=>`<option value="${r.key}">${rarityName(r.key)}</option>`).join('');
+  fcs.onchange = renderGarage; frs.onchange = renderGarage;
+  $('filterFav').onchange = renderGarage;
+}
+function updateRegionSelect(){
+  const rSel = $('regionSelect');
+  const regions = COUNTRIES[state.selectedCountry].regions;
+  rSel.innerHTML = Object.entries(regions).map(([k,v])=>`<option value="${k}">${v.name} (${k})</option>`).join('');
+  rSel.value = state.selectedRegion;
+}
+window.updateRegionSelect = updateRegionSelect;
+
+/* ---------- TABS ---------- */
+function initTabs(){
+  document.querySelectorAll('.tab').forEach(tab=>{
+    if(tab.dataset.tab){
+      tab.onclick = () => {
+        document.querySelectorAll('#mainTabs .tab').forEach(x=>x.classList.toggle('active', x===tab));
+        currentTab = tab.dataset.tab;
+        ['generator','garage','market','top','more'].forEach(v=>{
+          const el = $('view-'+v);
+          if(el) el.style.display = (v===currentTab)?'flex':'none';
+        });
+        if(currentTab==='garage') renderGarage();
+        if(currentTab==='market') renderMarket();
+        if(currentTab==='top') renderTop();
+        if(currentTab==='more') renderMoreContent();
+      };
+    }
+    if(tab.dataset.mkt){
+      tab.onclick = () => {
+        document.querySelectorAll('.tab[data-mkt]').forEach(x=>x.classList.toggle('active', x===tab));
+        marketFilter = tab.dataset.mkt; renderMarket();
+      };
+    }
+    if(tab.dataset.more){
+      tab.onclick = () => {
+        document.querySelectorAll('.tab[data-more]').forEach(x=>x.classList.toggle('active', x===tab));
+        moreTab = tab.dataset.more; renderMoreContent();
+      };
+    }
+  });
+}
+
+/* ---------- INIT ---------- */
+function initButtons(){
+  $('btnGenerate').onclick = () => startGeneration('basic');
+  $('btnPremium').onclick = () => startGeneration('premium');
+  $('btnVip').onclick = () => startGeneration('vip');
+  $('btnDaily').onclick = claimDaily;
+  $('btnSellAll').onclick = sellAll;
+  $('searchInput').oninput = renderGarage;
+  $('sortSelect').onchange = renderGarage;
+  document.body.addEventListener('click', ()=>Sound.init(), {once:true});
+}
+
+/* ---------- ONBOARDING ---------- */
+let onbIdx = 0;
+const ONB_STEPS = [
+  {icon:'🎰', text:'Генерируйте номера — базовые, улучшенные и VIP'},
+  {icon:'💎', text:'Ловите редкие и легендарные комбинации'},
+  {icon:'📦', text:'Все номера автоматически попадают в гараж'},
+  {icon:'💸', text:'Продавайте ненужные номера за деньги'},
+  {icon:'🌍', text:'Собирайте коллекции по регионам и странам'}
+];
+function startOnboarding(){
+  onbIdx = 0;
+  renderOnb();
+  $('onboarding').classList.add('show');
+}
+function renderOnb(){
+  const s = ONB_STEPS[onbIdx];
+  $('onbIcon').textContent = s.icon;
+  $('onbText').textContent = s.text;
+  $('onbPrev').style.visibility = onbIdx===0?'hidden':'visible';
+  $('onbNext').textContent = onbIdx===ONB_STEPS.length-1 ? t('done') : t('next');
+}
+function nextOnb(dir){
+  if(dir>0 && onbIdx===ONB_STEPS.length-1){
+    $('onboarding').classList.remove('show');
+    prefs.onboarded = true; savePrefs();
+    return;
+  }
+  onbIdx = Math.max(0, Math.min(ONB_STEPS.length-1, onbIdx+dir));
+  renderOnb();
+}
+window.nextOnb = nextOnb;
+
+/* ---------- THEME + I18N + START ---------- */
+function initGame(){
+  loadPrefs();
+  loadGame();
+  Sound.volume = prefs.volume;
+  Sound.enabled = prefs.sfxOn;
+  Sound.rareEnabled = prefs.rareSoundOn;
+  Sound.vibration = prefs.vibrateOn;
+  applyTheme();
+  applyI18n();
+  initSelectors();
+  initTabs();
+  initButtons();
+  if(!state.currentEvent || Math.random()<0.5) rollEvent();
+  regenerateMarket();
+  checkDailyQuests();
+  render();
+  saveGame();
+  if(!prefs.onboarded) startOnboarding();
+  console.log('%c[ABIBOK] Berkut Garage v3 ready', 'color:#d4af37;font-weight:900;font-size:14px');
+}
+if(document.readyState!=='loading') initGame();
+else window.addEventListener('DOMContentLoaded', initGame);
+
+// expose for inline
+window.toggleFav=toggleFav;
+window.showPlateInfo=showPlateInfo;
+window.closeModal=closeModal;
+window.sellFromGarage=sellFromGarage;
+window.confirmSell=confirmSell;
+window.confirmSellAll=confirmSellAll;
+window.closeJackpot=closeJackpot;
+window.buyFromMarket=buyFromMarket;
+window.openSettings=openSettings;
+window.togglePref=togglePref;
+window.resetPrefs=resetPrefs;
+window.setAvatar=setAvatar;
+window.changeName=changeName;
+window.applyPromo=applyPromo;
+</script>
+</body>
+</html>
